@@ -1,0 +1,28 @@
+# ─── Node ────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── Environment ─────────────────────────────────────────────────
+.env
+.env.local
+.env.production
+
+# ─── Database ────────────────────────────────────────────────────
+data/
+*.db
+*.db-wal
+*.db-shm
+
+# ─── OS ──────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ─── IDE ─────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace

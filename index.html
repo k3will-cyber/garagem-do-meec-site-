@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Garagem do MEEC — Dados. Diagnóstico. Direto ao ponto.</title>
+  <meta name="description" content="Oficina mecânica em Valparaíso de Goiás com diagnóstico computadorizado, dados reais e serviço sem enrolação. Seu carro entra com problema, sai com laudo técnico.">
+  <meta name="theme-color" content="#0044CC">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230044CC'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-weight='900' font-size='16' font-family='Inter,sans-serif'%3EGM%3C/text%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='24' fill='%230044CC'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-weight='900' font-size='72' font-family='Inter,sans-serif'%3EGM%3C/text%3E%3C/svg%3E">
+  <link rel="preload" href="media/logo-animada.mp4" as="video" type="video/mp4">
+  <link rel="preload" href="media/banner-fundo.jpeg" as="image" type="image/jpeg">
+  <link rel="preload" href="media/logo.jpeg" as="image" type="image/jpeg">
+  <link rel="preload" href="media/mecanico-trabalhando.jpeg" as="image" type="image/jpeg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dash: {
+              bg: '#08080A',
+              panel: '#0F0F12',
+              border: '#1C1C21',
+              'border-light': '#2A2A31',
+              accent: '#0044CC',
+              'accent-hover': '#003399',
+              orange: '#F5C800',
+              green: '#30D158',
+              blue: '#0A84FF',
+              teal: '#5AC8FA',
+              text: '#F2F2F7',
+              'text-dim': '#8E8E93',
+              'text-muted': '#636366',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: #08080A;
+      color: #F2F2F7;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #08080A; }
+    ::-webkit-scrollbar-thumb { background: #2A2A31; border-radius: 3px; }
+
+    /* Utility classes */
+    .grid-overlay {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .dash-card {
+      background: #0F0F12;
+      border: 1px solid #1C1C21;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .dash-card:hover {
+      border-color: #2A2A31;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .dash-card-accent { border-color: rgba(0, 68, 204, 0.3); }
+    .dash-card-accent:hover {
+      border-color: #0044CC;
+      box-shadow: 0 8px 32px rgba(0, 68, 204, 0.1);
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+    }
+    .status-dot.live {
+      background: #30D158;
+      box-shadow: 0 0 8px rgba(48, 209, 88, 0.5);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .progress-bar {
+      height: 4px;
+      background: #1C1C21;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; border-radius: 2px;
+      transition: width 1.5s ease-out;
+    }
+    .text-gradient-accent {
+      background: linear-gradient(135deg, #0044CC, #F5C800);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 28px; background: #0044CC; color: #fff; font-weight: 600;
+      font-size: 14px; letter-spacing: 0.02em; border-radius: 10px;
+      transition: all 0.2s ease; text-decoration: none; border: none; cursor: pointer;
+    }
+    .btn-primary:hover {
+      background: #003399; transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(0, 68, 204, 0.25);
+    }
+    .btn-secondary {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 28px; background: transparent; color: #F2F2F7; font-weight: 600;
+      font-size: 14px; letter-spacing: 0.02em; border-radius: 10px;
+      border: 1px solid #2A2A31; transition: all 0.2s ease; text-decoration: none;
+    }
+    .btn-secondary:hover { border-color: #F2F2F7; background: rgba(255,255,255,0.05); }
+    .price-tag {
+      display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+      border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+    }
+
+    /* Media placeholder */
+    .media-placeholder {
+      background: linear-gradient(135deg, #0F0F12 0%, #1A1A1D 50%, #0F0F12 100%);
+      background-size: 200% 200%;
+      animation: shimmer 3s ease-in-out infinite;
+      border: 1px solid #1C1C21;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .media-placeholder .overlay-icon {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 8px; color: #636366;
+    }
+    .media-placeholder .overlay-icon svg { width: 32px; height: 32px; opacity: 0.4; }
+    .media-placeholder .overlay-icon span {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      letter-spacing: 0.1em; text-transform: uppercase; color: #636366;
+    }
+
+    /* Lightbox */
+    .lightbox-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(20px);
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 24px;
+      cursor: zoom-out;
+    }
+    .lightbox-overlay.open { display: flex; }
+    .lightbox-overlay img {
+      max-width: 90vw; max-height: 90vh;
+      border-radius: 12px;
+      object-fit: contain;
+      cursor: default;
+    }
+    .lightbox-overlay .close-btn {
+      position: absolute; top: 20px; right: 20px;
+      width: 44px; height: 44px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: all 0.2s;
+    }
+    .lightbox-overlay .close-btn:hover { background: rgba(255,255,255,0.2); }
+
+    /* Lazy load fade-in */
+    .lazy-img {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .lazy-img.loaded { opacity: 1; }
+
+    /* Before/after slider */
+    .ba-container { position: relative; overflow: hidden; border-radius: 12px; cursor: ew-resize; }
+    .ba-container img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .ba-before { position: absolute; top: 0; left: 0; height: 100%; overflow: hidden; z-index: 2; }
+    .ba-handle {
+      position: absolute; top: 0; bottom: 0; width: 4px;
+      background: #fff; z-index: 3;
+      cursor: ew-resize;
+      transform: translateX(-2px);
+    }
+    .ba-handle::before {
+      content: '⟷';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: #0044CC; color: #fff;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: bold;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    }
+
+    /* PWA install banner */
+    .pwa-banner {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      z-index: 90;
+      background: #0F0F12; border: 1px solid #2A2A31;
+      border-radius: 16px; padding: 16px 20px;
+      display: none; align-items: center; gap: 16px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+      max-width: 420px; width: calc(100% - 32px);
+      backdrop-filter: blur(20px);
+    }
+    .pwa-banner.show { display: flex; }
+    .pwa-banner .icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: #0044CC; display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 20px; color: #fff; flex-shrink: 0;
+    }
+
+    /* MEEC OFERTAS QR Code Animation */
+    .qr-pulse {
+      animation: qr-breath 3s ease-in-out infinite;
+      cursor: pointer;
+      transition: filter 0.3s ease;
+    }
+    .qr-pulse:hover {
+      filter: brightness(1.3);
+    }
+    @keyframes qr-breath {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,68,204,0.3); }
+      50% { transform: scale(1.04); box-shadow: 0 0 40px rgba(0,68,204,0.6); }
+    }
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 3px;
+      width: 100%;
+      aspect-ratio: 1;
+    }
+    .qr-cell {
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+    .qr-cell.on { background: #F2F2F7; }
+    .qr-cell.off { background: transparent; }
+    .qr-cell.accent { background: #0044CC; }
+
+    @keyframes confetti-fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* Animations */
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    .scan-line {
+      position: relative; overflow: hidden;
+    }
+    .scan-line::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #0044CC, transparent);
+      animation: scan 4s linear infinite; opacity: 0.4;
+    }
+    @keyframes scan {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(400%); }
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Responsive text */
+    @media (max-width: 768px) {
+      .hero-title { font-size: 2.5rem !important; line-height: 1.1 !important; }
+      .section-title { font-size: 1.75rem !important; }
+    }
+
+    /* Form styles */
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .animate-spin { animation: spin 1s linear infinite; }
+
+    /* Toast */
+    .toast-bar {
+      background: linear-gradient(90deg, rgba(48,209,88,0.15), transparent);
+      border-left: 3px solid #30D158;
+    }
+
+    /* Cart Sidebar */
+    .cart-overlay {
+      position: fixed; inset: 0; z-index: 80;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .cart-overlay.open { display: block; opacity: 1; }
+    .cart-sidebar {
+      position: fixed; top: 0; right: 0; bottom: 0; z-index: 81;
+      width: 100%; max-width: 420px;
+      background: #0F0F12;
+      border-left: 1px solid #1C1C21;
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .cart-sidebar.open { transform: translateX(0); }
+    .cart-sidebar .cart-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid #1C1C21;
+    }
+    .cart-sidebar .cart-items {
+      flex: 1; overflow-y: auto;
+      padding: 16px 24px;
+    }
+    .cart-sidebar .cart-footer {
+      padding: 20px 24px;
+      border-top: 1px solid #1C1C21;
+      background: #0F0F12;
+    }
+    .cart-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #1C1C21;
+    }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-item-img {
+      width: 56px; height: 56px;
+      border-radius: 8px; object-fit: cover;
+      background: #1C1C21;
+    }
+    .cart-item-info { flex: 1; }
+    .cart-item-info .name { font-size: 13px; font-weight: 600; }
+    .cart-item-info .price { font-size: 12px; color: #30D158; font-family: 'JetBrains Mono', monospace; }
+    .cart-item-qty {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .cart-item-qty button {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      background: #1C1C21;
+      border: 1px solid #2A2A31;
+      color: #F2F2F7;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 600;
+      transition: all 0.2s;
+    }
+    .cart-item-qty button:hover { background: #2A2A31; }
+    .cart-item-qty span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px; font-weight: 600;
+      width: 24px; text-align: center;
+    }
+    .cart-empty {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 100%; text-align: center;
+      color: #636366;
+    }
+    .cart-empty svg { width: 64px; height: 64px; opacity: 0.3; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================ -->
+  <!-- TOP STATUS BAR                                               -->
+  <!-- ============================================================ -->
+  <div class="sticky top-0 z-50 bg-[#08080A]/90 backdrop-blur-xl border-b border-[#1C1C21]">
+    <div class="max-w-[1280px] mx-auto px-6 flex items-center justify-between h-10">
+      <div class="flex items-center gap-4 text-[11px] font-medium text-[#636366]">
+        <div class="flex items-center gap-2">
+          <span class="status-dot live"></span>
+          <span class="uppercase tracking-wider text-[#30D158]">Sistema Online</span>
+        </div>
+        <span class="hidden sm:inline text-[#2A2A31]">|</span>
+        <span class="hidden sm:inline text-[#8E8E93]">Valparaíso de Goiás · <span class="text-[#F2F2F7]">desde 2014</span></span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="tag bg-[#1C1C21] text-[#8E8E93] border border-[#2A2A31]">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Seg–Sex 8h–18h
+        </span>
+        <a href="#" onclick="openClientPortal(); return false;" class="tag bg-[#30D158]/10 text-[#30D158] border border-[#30D158]/20 font-semibold hover:bg-[#30D158]/20 transition-all no-underline" title="Consultar Atendimento">
+          📋 Consultar
+        </a>
+        <a href="/login" class="tag bg-[#F2F2F7]/10 text-[#F2F2F7] border border-[#F2F2F7]/20 font-semibold hover:bg-[#F2F2F7]/20 transition-all no-underline" title="Entrar na sua conta">
+          👤 Entrar
+        </a>
+        <a href="/admin" class="tag bg-[#0044CC]/10 text-[#0044CC] border border-[#0044CC]/20 font-semibold hover:bg-[#0044CC]/20 transition-all no-underline" title="Painel Admin">
+          🔒 Admin
+        </a>
+        <span class="tag bg-[#0044CC]/10 text-[#0044CC] border border-[#0044CC]/20 font-semibold" id="vagas-counter">
+          🔥 <span id="vagas-num">3</span> vagas hoje
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- NAV                                                          -->
+  <!-- ============================================================ -->
+  <nav class="sticky top-10 z-40 bg-[#0F0F12]/90 backdrop-blur-xl border-b border-[#1C1C21]">
+    <div class="max-w-[1280px] mx-auto px-6 flex items-center justify-between h-16">
+      <a href="#" class="flex items-center gap-3 no-underline">
+        <div class="logo-container relative w-12 h-12">
+          <video
+            class="logo-video w-12 h-12 rounded-lg object-cover"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="auto"
+            poster="media/logo.jpeg">
+            <source src="media/logo-animada.mp4" type="video/mp4">
+          </video>
+          <button id="logo-sound-toggle" class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#0044CC] flex items-center justify-center cursor-pointer border-0 text-white text-[10px] opacity-40 hover:opacity-100 transition-opacity" title="Ativar som">
+            🔊
+          </button>
+        </div>
+        <div>
+          <div class="font-sans font-extrabold text-base tracking-tight leading-none">
+            GARAGEM <span class="text-[#0044CC]">DO MEEC</span>
+          </div>
+          <div class="font-mono text-[10px] text-[#636366] tracking-[0.15em] uppercase">Valparaíso · GO · Dados reais</div>
+        </div>
+      </a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#dashboard" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Dashboard</a>
+        <a href="#servicos" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Serviços</a>
+        <a href="#galeria" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Galeria</a>
+        <a href="#estoque" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Estoque</a>
+        <a href="#numeros" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Números</a>
+        <a href="#processo" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Processo</a>
+        <a href="#contato" class="btn-primary text-xs px-5 py-2.5">
+          Agendar Diagnóstico
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+      <button id="mobile-menu-btn" class="md:hidden text-[#8E8E93] hover:text-[#F2F2F7]">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ============================================================ -->
+  <!-- HERO                                                         -->
+  <!-- ============================================================ -->
+  <section id="dashboard" class="relative grid-overlay overflow-hidden scan-line" style="background-image: url('media/banner-fundo.jpeg'); background-size: cover; background-position: center 30%; background-repeat: no-repeat; background-blend-mode: overlay;">
+    <div class="absolute inset-0 bg-[#08080A]/80"></div>
+    <div class="max-w-[1280px] mx-auto px-6 pt-16 pb-20 lg:pt-24 lg:pb-28 relative z-10">
+      <div class="flex items-center gap-2 text-[11px] font-medium text-[#636366] mb-8 reveal visible">
+        <span class="text-[#30D158]">●</span>
+        <span>Dashboard da Oficina</span>
+        <span class="text-[#2A2A31]">/</span>
+        <span class="text-[#8E8E93]">Status: <span class="text-[#30D158]">Operacional</span></span>
+        <span class="text-[#2A2A31]">/</span>
+        <span class="text-[#0044CC]" id="hero-vagas">3 vagas disponíveis hoje</span>
+      </div>
+
+      <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+        <div class="lg:col-span-7 space-y-8">
+          <div class="space-y-4">
+            <div class="inline-flex items-center gap-3 dash-card px-4 py-2 rounded-lg reveal visible">
+              <span class="status-dot live"></span>
+              <span class="font-mono text-xs text-[#30D158] font-medium tracking-wider">DIAGNÓSTICO COMPUTADORIZADO</span>
+              <span class="text-[10px] font-mono text-[#636366] bg-[#1C1C21] px-2 py-0.5 rounded">Válido hoje</span>
+            </div>
+            <h1 class="hero-title font-sans font-black text-[3.5rem] lg:text-[4.5rem] leading-[1.05] tracking-[-0.03em] reveal visible">
+              APONTE PARA O <span class="text-[#0044CC]">QR CODE</span><br>
+              <span class="text-gradient-accent">E GANHE PRÊMIOS EXCLUSIVOS.</span>
+            </h1>
+            <p class="text-lg text-[#8E8E93] leading-relaxed max-w-xl reveal visible reveal-delay-1">
+              Na <strong class="text-[#F2F2F7]">Garagem do MEEC</strong> são 12 anos de estrada, ALPHATEST,
+              checklist de 50+ itens e laudo técnico em PDF.
+              <strong class="text-[#0044CC]">Aponte a câmera para o QR code e desbloqueie descontos reais agora.</strong>
+            </p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3 reveal visible reveal-delay-2">
+            <button onclick="scrollToQRCode()" class="btn-primary text-base px-8 py-4" style="background: linear-gradient(135deg, #0044CC, #F5C800); box-shadow: 0 0 30px rgba(245,200,0,0.2);">
+              📷 APONTAR PARA O QR
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </button>
+            <a href="#servicos" class="btn-secondary text-base px-8 py-4">
+              Ver Serviços
+            </a>
+            <a href="#contato" class="btn-secondary text-base px-8 py-4">
+              🔥 Agendar Diagnóstico
+            </a>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-6 pt-4 reveal visible reveal-delay-3">
+            <div class="flex items-center gap-2 text-sm text-[#636366]">
+              <svg class="w-4 h-4 text-[#30D158]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Laudo técnico incluso</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-[#636366]">
+              <svg class="w-4 h-4 text-[#30D158]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Orçamento fechado</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-[#0044CC]">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>QR disponível hoje</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: QR Code + Mini Metrics -->
+        <div class="lg:col-span-5 space-y-4 reveal visible reveal-delay-3">
+          <!-- QR Code Animado -->
+          <div class="dash-card dash-card-accent p-6 relative overflow-hidden text-center" onclick="scrollToQRCode()">
+            <div class="absolute top-0 right-0 w-40 h-40 bg-[#F5C800]/5 rounded-bl-full"></div>
+            <div class="relative">
+              <div class="flex items-center justify-between mb-2">
+                <span class="tag bg-[#F5C800]/10 text-[#F5C800] border border-[#F5C800]/20 font-mono text-[10px]">
+                  QR MEEC OFERTAS
+                </span>
+                <span class="font-mono text-[10px] text-[#F5C800]">● Ao vivo</span>
+              </div>
+              <div class="qr-pulse mx-auto" style="width: min(200px, 60%);">
+                <div class="qr-grid" id="qr-code"></div>
+              </div>
+              <p class="text-xs text-[#8E8E93] mt-4 font-medium">
+                Aponte a câmera ou <strong class="text-[#F5C800] cursor-pointer hover:underline">toque para ver o QR</strong>
+              </p>
+              <div class="flex items-center justify-center gap-1 mt-2 text-[10px] text-[#636366]">
+                <span class="status-dot live"></span>
+                <span><strong id="ofertas-spins-count" class="text-[#F2F2F7]">0</strong> prêmios sorteados hoje</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Metrics Row -->
+          <div class="grid grid-cols-3 gap-3">
+            <div class="dash-card p-3 text-center">
+              <div class="font-mono font-bold text-lg text-[#0044CC]">3.2K+</div>
+              <div class="text-[9px] text-[#636366] uppercase tracking-wider">Carros</div>
+            </div>
+            <div class="dash-card p-3 text-center">
+              <div class="font-mono font-bold text-lg text-[#30D158]">98%</div>
+              <div class="text-[9px] text-[#636366] uppercase tracking-wider">Aprovação</div>
+            </div>
+            <div class="dash-card p-3 text-center">
+              <div class="font-mono font-bold text-lg text-[#FF9F0A]">90d</div>
+              <div class="text-[9px] text-[#636366] uppercase tracking-wider">Garantia</div>
+            </div>
+          </div>
+
+          <div class="toast-bar dash-card p-3 flex items-center gap-3">
+            <svg class="w-4 h-4 text-[#F5C800] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="text-xs text-[#8E8E93]"><span class="text-[#F5C800] font-medium">QR MEEC OFERTAS</span> — descontos exclusivos para clientes · Aponte agora!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SERVIÇOS                                                     -->
+  <!-- ============================================================ -->
+  <section id="servicos" class="border-t border-[#1C1C21] py-20 lg:py-28">
+    <div class="max-w-[1280px] mx-auto px-6">
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-14">
+        <div class="max-w-2xl">
+          <div class="tag bg-[#0044CC]/10 text-[#0044CC] border border-[#0044CC]/20 mb-4 reveal">● Nossas Competências</div>
+          <h2 class="section-title font-sans font-black text-[2.5rem] lg:text-[3.25rem] leading-tight tracking-[-0.02em] reveal">
+            SERVIÇO COM<br class="hidden lg:block">
+            <span class="text-gradient-accent">DADOS, NÃO ACHISMO.</span>
+          </h2>
+          <p class="text-[#8E8E93] mt-4 max-w-xl leading-relaxed reveal reveal-delay-1">
+            Cinco frentes de trabalho. Todas com o mesmo protocolo: diagnóstico antes da peça, 
+            laudo antes do orçamento, garantia depois do serviço.
+          </p>
+        </div>
+        <div class="hidden lg:flex items-center gap-2 text-sm text-[#636366] font-mono reveal reveal-delay-2">
+          <span class="status-dot live"></span>
+          <span>5 de 5 operacionais</span>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Card 1 - Troca de Óleo -->
+        <div class="dash-card p-6 group reveal">
+          <div class="flex items-start justify-between mb-5">
+            <div class="w-11 h-11 rounded-lg bg-[#FF9F0A]/10 border border-[#FF9F0A]/20 flex items-center justify-center group-hover:border-[#FF9F0A]/40 transition-colors">
+              <svg class="w-5 h-5 text-[#FF9F0A]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 2v6m0 0L8 14m4-6l4 6M5 20h14"/></svg>
+            </div>
+            <span class="price-tag bg-[#FF9F0A]/10 text-[#FF9F0A]">A partir R$ 180</span>
+          </div>
+          <h3 class="font-sans font-bold text-lg mb-2">Troca de Óleo</h3>
+          <p class="text-sm text-[#8E8E93] leading-relaxed mb-4">
+            Sintético, semissintético ou mineral. Recomendação baseada no <strong class="text-[#F2F2F7]">manual + análise de viscosidade SAE</strong>.
+          </p>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Filtro premium</span><span class="text-[#30D158]">✓</span></div>
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Descarte ecológico</span><span class="text-[#30D158]">✓</span></div>
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Garantia</span><span class="text-[#30D158]">90 dias</span></div>
+          </div>
+        </div>
+
+        <!-- Card 2 - Revisão Completa (destaque) -->
+        <div class="dash-card dash-card-accent p-6 group relative reveal reveal-delay-1">
+          <div class="absolute -top-2.5 right-4 tag bg-[#0044CC] text-white border-0 text-[10px]">MAIS SOLICITADO</div>
+          <div class="flex items-start justify-between mb-5">
+            <div class="w-11 h-11 rounded-lg bg-[#0044CC]/10 border border-[#0044CC]/20 flex items-center justify-center group-hover:border-[#0044CC]/40 transition-colors">
+              <svg class="w-5 h-5 text-[#0044CC]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            </div>
+            <span class="price-tag bg-[#0044CC]/10 text-[#0044CC]">A partir R$ 350</span>
+          </div>
+          <h3 class="font-sans font-bold text-lg mb-2">Revisão Completa</h3>
+          <p class="text-sm text-[#8E8E93] leading-relaxed mb-4">
+            <strong class="text-[#F2F2F7]">50+ itens</strong> + ALPHATEST + relatório digital em PDF. 
+            Você sabe o estado do carro <strong class="text-[#F2F2F7]">antes</strong> de autorizar.
+          </p>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Freios, suspensão, direção</span><span class="text-[#30D158]">✓</span></div>
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Elétrica + bateria</span><span class="text-[#30D158]">✓</span></div>
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Laudo técnico em PDF</span><span class="text-[#30D158]">✓</span></div>
+          </div>
+        </div>
+
+        <!-- Card 3 - Diagnóstico -->
+        <div class="dash-card p-6 group reveal reveal-delay-2">
+          <div class="flex items-start justify-between mb-5">
+            <div class="w-11 h-11 rounded-lg bg-[#30D158]/10 border border-[#30D158]/20 flex items-center justify-center group-hover:border-[#30D158]/40 transition-colors">
+              <svg class="w-5 h-5 text-[#30D158]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <span class="price-tag bg-[#30D158]/10 text-[#30D158]">1ª vez sem custo</span>
+          </div>
+          <h3 class="font-sans font-bold text-lg mb-2">Diagnóstico Computadorizado</h3>
+          <p class="text-sm text-[#8E8E93] leading-relaxed mb-4">
+            Scanner multimarcas com leitura de <strong class="text-[#F2F2F7]">ECU, ABS, airbag e câmbio</strong>. 
+            Laudo técnico em PDF com explicação em português claro.
+          </p>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Leitura completa de DTCs</span><span class="text-[#30D158]">✓</span></div>
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Teste de atuadores</span><span class="text-[#30D158]">✓</span></div>
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Explicação sem mistério</span><span class="text-[#30D158]">✓</span></div>
+          </div>
+        </div>
+
+        <!-- Card 4 - Encaminhamento -->
+        <div class="dash-card p-6 group reveal reveal-delay-1">
+          <div class="flex items-start justify-between mb-5">
+            <div class="w-11 h-11 rounded-lg bg-[#0A84FF]/10 border border-[#0A84FF]/20 flex items-center justify-center group-hover:border-[#0A84FF]/40 transition-colors">
+              <svg class="w-5 h-5 text-[#0A84FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </div>
+            <span class="price-tag bg-[#0A84FF]/10 text-[#0A84FF]">SEM CUSTO</span>
+          </div>
+          <h3 class="font-sans font-bold text-lg mb-2">Encaminhamento Direcionado</h3>
+          <p class="text-sm text-[#8E8E93] leading-relaxed mb-4">
+            Problema exige especialista? A gente <strong class="text-[#F2F2F7]">encaminha com laudo técnico</strong> 
+            e acompanha o serviço. Não improvisamos.
+          </p>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Rede de 12 especialistas</span><span class="text-[#30D158]">✓</span></div>
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Laudo acompanha</span><span class="text-[#30D158]">✓</span></div>
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Pós-serviço monitorado</span><span class="text-[#30D158]">✓</span></div>
+          </div>
+        </div>
+
+        <!-- Card 5 - Mecânica Geral -->
+        <div class="dash-card p-6 group reveal reveal-delay-2">
+          <div class="flex items-start justify-between mb-5">
+            <div class="w-11 h-11 rounded-lg bg-[#5AC8FA]/10 border border-[#5AC8FA]/20 flex items-center justify-center group-hover:border-[#5AC8FA]/40 transition-colors">
+              <svg class="w-5 h-5 text-[#5AC8FA]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            </div>
+            <span class="price-tag bg-[#5AC8FA]/10 text-[#5AC8FA]">Orçamento Fechado</span>
+          </div>
+          <h3 class="font-sans font-bold text-lg mb-2">Mecânica Geral</h3>
+          <p class="text-sm text-[#8E8E93] leading-relaxed mb-4">
+            Motor, câmbio manual, freios, suspensão, escapamento, elétrica. 
+            <strong class="text-[#F2F2F7]">Peça com nota fiscal + garantia de 90 dias.</strong>
+          </p>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Peças originais/OEM</span><span class="text-[#30D158]">✓</span></div>
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Orçamento prévio</span><span class="text-[#30D158]">✓</span></div>
+            <div class="flex items-center justify-between"><span class="text-[#636366]">Garantia por escrito</span><span class="text-[#30D158]">✓</span></div>
+          </div>
+        </div>
+
+        <!-- Card 6 - CTA -->
+        <div class="dash-card bg-[#0044CC]/5 border-[#0044CC]/20 p-6 flex flex-col justify-center group hover:border-[#0044CC]/40 reveal reveal-delay-3">
+          <div class="mb-4"><span class="tag bg-[#0044CC]/20 text-[#0044CC] border-0 text-[10px]">🔥 OFERTA</span></div>
+          <h3 class="font-sans font-black text-3xl mb-2">DIAGNÓSTICO<br><span class="text-[#0044CC]">TÉCNICO</span></h3>
+          <p class="text-sm text-[#8E8E93] mb-5">ALPHATEST + checklist visual. Zero compromisso.</p>
+          <a href="#contato" class="btn-primary text-sm px-6 py-3 self-start">
+            Agendar <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- GALERIA DE FOTOS — REAL MEDIA SHOWCASE                      -->
+  <!-- ============================================================ -->
+  <section id="galeria" class="border-t border-[#1C1C21] py-20 lg:py-28 grid-overlay">
+    <div class="max-w-[1280px] mx-auto px-6">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <div class="tag bg-[#5AC8FA]/10 text-[#5AC8FA] border border-[#5AC8FA]/20 mb-4 justify-center reveal">● Mídia Real</div>
+        <h2 class="section-title font-sans font-black text-[2.5rem] lg:text-[3.25rem] leading-tight tracking-[-0.02em] reveal">
+          A GARAGEM<br class="hidden lg:block">
+          <span class="text-gradient-accent">EM AÇÃO.</span>
+        </h2>
+        <p class="text-[#8E8E93] mt-4 max-w-xl mx-auto leading-relaxed reveal reveal-delay-1">
+          Fotos e vídeos reais dos serviços realizados. <strong class="text-[#F2F2F7]">Clique para ampliar.</strong>
+        </p>
+      </div>
+
+      <!-- Masonry-like gallery grid -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Image 1 - Mecânico trabalhando -->
+        <div class="reveal group cursor-pointer" onclick="openLightbox('media/mecanico-trabalhando.jpeg')">
+          <div class="media-placeholder aspect-[4/3] relative overflow-hidden">
+            <img src="media/mecanico-trabalhando.jpeg" alt="Mecânico trabalhando na Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" decoding="async" onload="this.classList.add('loaded')">
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08080A] to-transparent p-4">
+              <div class="flex items-center gap-2">
+                <span class="tag bg-[#0044CC]/20 text-[#0044CC] border-0 text-[9px]">🔧 MECÂNICO</span>
+                <span class="font-mono text-[10px] text-[#8E8E93]">Serviço em andamento</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image 2 - Motor sujo -->
+        <div class="reveal reveal-delay-1 group cursor-pointer" onclick="openLightbox('media/motor-sujo.png')">
+          <div class="media-placeholder aspect-[4/3] relative overflow-hidden">
+            <img src="media/motor-sujo.png" alt="Motor sujo na Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" decoding="async" onload="this.classList.add('loaded')">
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08080A] to-transparent p-4">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-[10px] text-[#8E8E93]">🔧 Motor antes do serviço</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image 3 - Vídeo do logo animado -->
+        <div class="reveal reveal-delay-2 md:row-span-2 group cursor-pointer">
+          <div class="media-placeholder aspect-[4/6] h-full relative overflow-hidden rounded-3xl bg-[#08080A]">
+            <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="metadata" poster="media/logo.jpeg">
+              <source src="media/logo-animada.mp4" type="video/mp4">
+            </video>
+            <div class="absolute inset-0 bg-black/20"></div>
+            <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center px-4">
+              <span class="font-mono text-[10px] text-[#636366] tracking-widest uppercase">VÍDEO</span>
+              <span class="text-sm font-bold text-[#F2F2F7]">Logo animado da Garagem do MEEC</span>
+              <span class="tag bg-[#0044CC]/10 text-[#0044CC] border-0 mt-2">▶ Assistir</span>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08080A] to-transparent p-4">
+              <div class="flex items-center gap-2">
+                <span class="status-dot live"></span>
+                <span class="font-mono text-[10px] text-[#30D158]">Pré-carregado no F5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image 4 - Kit de reparos VW -->
+        <div class="reveal reveal-delay-1 group cursor-pointer" onclick="openLightbox('media/kit-reparos-volks.jpeg')">
+          <div class="media-placeholder aspect-[4/3] relative overflow-hidden">
+            <img src="media/kit-reparos-volks.jpeg" alt="Kit de Reparos Volkswagen" class="w-full h-full object-cover lazy-img loaded" loading="lazy" decoding="async" onload="this.classList.add('loaded')">
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08080A] to-transparent p-4">
+              <div class="font-mono text-[10px] text-[#8E8E93]">📦 Kit de reparos VW</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image 5 - Troca de óleo -->
+        <div class="reveal reveal-delay-2 group cursor-pointer" onclick="openLightbox('media/troca-oleo.jpg')">
+          <div class="media-placeholder aspect-[4/3] relative overflow-hidden">
+            <img src="media/troca-oleo.jpg" alt="Troca de óleo Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" decoding="async" onload="this.classList.add('loaded')">
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08080A] to-transparent p-4">
+              <div class="font-mono text-[10px] text-[#8E8E93]">🛢️ Troca de óleo premium</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image 6 - Motor limpo -->
+        <div class="reveal reveal-delay-3 group cursor-pointer" onclick="openLightbox('media/motor-limpo.png')">
+          <div class="media-placeholder aspect-[4/3] relative overflow-hidden">
+            <img src="media/motor-limpo.png" alt="Motor limpo na Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" decoding="async" onload="this.classList.add('loaded')">
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08080A] to-transparent p-4">
+              <div class="font-mono text-[10px] text-[#8E8E93]">✨ Motor revisado e limpo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gallery CTA -->
+      <div class="text-center mt-10 reveal">
+        <p class="text-sm text-[#636366] font-mono mb-4">
+          📸 <strong class="text-[#F2F2F7]">Fotos reais</strong> da Garagem do MEEC — clique para ampliar!
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- BEFORE / AFTER — COMPARAÇÃO INTERATIVA                      -->
+  <!-- ============================================================ -->
+  <section class="border-t border-[#1C1C21] py-20 lg:py-28">
+    <div class="max-w-[1280px] mx-auto px-6">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <div class="tag bg-[#FF9F0A]/10 text-[#FF9F0A] border border-[#FF9F0A]/20 mb-4 justify-center reveal">● Antes & Depois</div>
+        <h2 class="section-title font-sans font-black text-[2.5rem] lg:text-[3.25rem] leading-tight tracking-[-0.02em] reveal">
+          RESULTADO QUE<br class="hidden lg:block">
+          <span class="text-gradient-accent">SE VÊ.</span>
+        </h2>
+        <p class="text-[#8E8E93] mt-4 max-w-xl mx-auto leading-relaxed reveal reveal-delay-1">
+          Deslize para comparar o antes e depois dos serviços. 
+          <strong class="text-[#F2F2F7]">Resultados reais, fotos reais.</strong>
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <!-- Before/After 1 -->
+        <div class="dash-card p-1 reveal">
+          <div class="ba-container" style="aspect-ratio: 4/3;">
+            <img src="media/motor-limpo.png" alt="Motor limpo - depois" class="w-full h-full object-cover absolute inset-0">
+            <div class="ba-before" style="width: 50%;">
+              <img src="media/motor-sujo.png" alt="Motor sujo - antes" class="w-full h-full object-cover">
+            </div>
+            <div class="ba-handle" style="left: 50%;"></div>
+            <div class="absolute bottom-2 left-2 z-10 tag bg-[#0044CC]/80 text-white border-0 text-[9px]">ANTES</div>
+            <div class="absolute bottom-2 right-2 z-10 tag bg-[#30D158]/80 text-white border-0 text-[9px]">DEPOIS</div>
+          </div>
+          <div class="p-4 text-center">
+            <div class="font-sans font-bold text-sm">Limpeza de Motor</div>
+            <div class="text-[11px] text-[#636366] font-mono">VW Gol 2018 · Troca de óleo + limpeza</div>
+          </div>
+        </div>
+
+        <!-- Before/After 2 -->
+        <div class="dash-card p-1 reveal reveal-delay-1">
+          <div class="ba-container" style="aspect-ratio: 4/3;">
+            <div class="media-placeholder w-full h-full absolute inset-0">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span class="font-mono text-[10px] text-[#636366] tracking-widest">ANTES: Freio desgastado</span>
+              </div>
+            </div>
+            <div class="ba-before" style="width: 50%;">
+              <div class="media-placeholder w-full h-full">
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span class="font-mono text-[10px] text-[#636366] tracking-widest">DEPOIS: Freio novo</span>
+                </div>
+              </div>
+            </div>
+            <div class="ba-handle" style="left: 50%;"></div>
+            <div class="absolute bottom-2 left-2 z-10 tag bg-[#0044CC]/80 text-white border-0 text-[9px]">ANTES</div>
+            <div class="absolute bottom-2 right-2 z-10 tag bg-[#30D158]/80 text-white border-0 text-[9px]">DEPOIS</div>
+          </div>
+          <div class="p-4 text-center">
+            <div class="font-sans font-bold text-sm">Troca de Pastilhas</div>
+            <div class="text-[11px] text-[#636366] font-mono">Ford Ka 2015 · Freio dianteiro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- NÚMEROS                                                      -->
+  <!-- ============================================================ -->
+  <section id="numeros" class="border-t border-[#1C1C21] py-20 lg:py-28 grid-overlay">
+    <div class="max-w-[1280px] mx-auto px-6">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <div class="tag bg-[#0A84FF]/10 text-[#0A84FF] border border-[#0A84FF]/20 mb-4 justify-center reveal">● Dados Operacionais</div>
+        <h2 class="section-title font-sans font-black text-[2.5rem] lg:text-[3.25rem] leading-tight tracking-[-0.02em] reveal">
+          NÚMEROS QUE<br class="hidden lg:block">
+          <span class="text-gradient-accent">NÃO MENTEM.</span>
+        </h2>
+        <p class="text-[#8E8E93] mt-4 max-w-xl mx-auto leading-relaxed reveal reveal-delay-1">
+          Mais de uma década atendendo carros em Valparaíso de Goiás. Cada número aqui representa 
+          um cliente que saiu com o problema resolvido.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="dash-card p-8 text-center reveal"><div class="font-mono font-black text-5xl lg:text-6xl mb-2 text-[#F2F2F7]">12</div><div class="text-xs text-[#636366] font-medium uppercase tracking-widest">Anos de Estrada</div><div class="text-[11px] text-[#8E8E93] mt-2">Desde 2014</div><div class="mt-4 progress-bar"><div class="progress-bar-fill bg-[#0044CC] w-full"></div></div></div>
+        <div class="dash-card p-8 text-center reveal reveal-delay-1"><div class="font-mono font-black text-5xl lg:text-6xl mb-2 text-[#30D158]">3.2K+</div><div class="text-xs text-[#636366] font-medium uppercase tracking-widest">Carros Atendidos</div><div class="text-[11px] text-[#8E8E93] mt-2">Média 267/ano</div><div class="mt-4 progress-bar"><div class="progress-bar-fill bg-[#30D158] w-[80%]"></div></div></div>
+        <div class="dash-card p-8 text-center reveal reveal-delay-2"><div class="font-mono font-black text-5xl lg:text-6xl mb-2 text-[#FF9F0A]">98%</div><div class="text-xs text-[#636366] font-medium uppercase tracking-widest">Aprovação</div><div class="text-[11px] text-[#8E8E93] mt-2">Clientes satisfeitos</div><div class="mt-4 progress-bar"><div class="progress-bar-fill bg-[#FF9F0A] w-[98%]"></div></div></div>
+        <div class="dash-card p-8 text-center reveal reveal-delay-3"><div class="font-mono font-black text-5xl lg:text-6xl mb-2 text-[#0A84FF]">47<span class="text-2xl text-[#636366]">min</span></div><div class="text-xs text-[#636366] font-medium uppercase tracking-widest">Diagnóstico</div><div class="text-[11px] text-[#8E8E93] mt-2">Tempo médio</div><div class="mt-4 progress-bar"><div class="progress-bar-fill bg-[#0A84FF] w-[60%]"></div></div></div>
+      </div>
+
+      <div class="grid md:grid-cols-4 gap-4">
+        <div class="dash-card p-5 flex items-center gap-4 reveal"><div class="w-12 h-12 rounded-lg bg-[#0044CC]/10 flex items-center justify-center shrink-0"><svg class="w-6 h-6 text-[#0044CC]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div><div class="font-mono font-bold text-xl">2</div><div class="text-[11px] text-[#636366]">Mecânicos</div></div></div>
+        <div class="dash-card p-5 flex items-center gap-4 reveal reveal-delay-1"><div class="w-12 h-12 rounded-lg bg-[#F5C800]/10 flex items-center justify-center shrink-0"><svg class="w-6 h-6 text-[#F5C800]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/></svg></div><div><div class="font-mono font-bold text-xl">2</div><div class="text-[11px] text-[#636366]">Elevadores</div></div></div>
+        <div class="dash-card p-5 flex items-center gap-4 reveal reveal-delay-2"><div class="w-12 h-12 rounded-lg bg-[#0A84FF]/10 flex items-center justify-center shrink-0"><svg class="w-6 h-6 text-[#0A84FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg></div><div><div class="font-mono font-bold text-xl">12</div><div class="text-[11px] text-[#636366]">Parceiros</div></div></div>
+        <div class="dash-card p-5 flex items-center gap-4 reveal reveal-delay-3"><div class="w-12 h-12 rounded-lg bg-[#30D158]/10 flex items-center justify-center shrink-0"><svg class="w-6 h-6 text-[#30D158]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div><div class="font-mono font-bold text-xl">90<span class="text-sm text-[#636366]">d</span></div><div class="text-[11px] text-[#636366]">Garantia</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PROCESSO                                                     -->
+  <!-- ============================================================ -->
+  <section id="processo" class="border-t border-[#1C1C21] py-20 lg:py-28">
+    <div class="max-w-[1280px] mx-auto px-6">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <div class="tag bg-[#30D158]/10 text-[#30D158] border border-[#30D158]/20 mb-4 justify-center reveal">● Fluxo de Trabalho</div>
+        <h2 class="section-title font-sans font-black text-[2.5rem] lg:text-[3.25rem] leading-tight tracking-[-0.02em] reveal">
+          COMO A GENTE<br class="hidden lg:block">
+          <span class="text-gradient-accent">RESOLVE.</span>
+        </h2>
+        <p class="text-[#8E8E93] mt-4 max-w-xl mx-auto leading-relaxed reveal reveal-delay-1">
+          Quatro passos. Do início ao fim, você sabe exatamente o que está acontecendo 
+          com seu carro — <strong class="text-[#F2F2F7]">antes de gastar um centavo.</strong>
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-4 gap-6">
+        <div class="relative reveal">
+          <div class="dash-card p-6 h-full"><div class="flex items-center gap-3 mb-4"><div class="w-9 h-9 rounded-lg bg-[#0044CC]/10 border border-[#0044CC]/20 flex items-center justify-center"><span class="font-mono font-bold text-sm text-[#0044CC]">01</span></div><span class="text-[11px] font-mono text-[#636366]">ETAPA 1/4</span></div><h3 class="font-sans font-bold text-lg mb-2">Recepção</h3><p class="text-sm text-[#8E8E93] leading-relaxed">Você chega, conta o problema, entregamos protocolo impresso com prazo estimado. <strong class="text-[#F2F2F7]">Café e wi-fi liberados.</strong></p></div>
+          <div class="hidden lg:block absolute top-1/2 -right-3.5 z-10 text-[#2A2A31]"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></div>
+        </div>
+        <div class="relative reveal reveal-delay-1">
+          <div class="dash-card p-6 h-full"><div class="flex items-center gap-3 mb-4"><div class="w-9 h-9 rounded-lg bg-[#FF9F0A]/10 border border-[#FF9F0A]/20 flex items-center justify-center"><span class="font-mono font-bold text-sm text-[#FF9F0A]">02</span></div><span class="text-[11px] font-mono text-[#636366]">ETAPA 2/4</span></div><h3 class="font-sans font-bold text-lg mb-2">Scanner + Inspeção</h3><p class="text-sm text-[#8E8E93] leading-relaxed">Leitura ALPHATEST multimarcas + checklist visual de <strong class="text-[#F2F2F7]">50+ itens</strong>. Você recebe fotos e vídeos no WhatsApp.</p></div>
+          <div class="hidden lg:block absolute top-1/2 -right-3.5 z-10 text-[#2A2A31]"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></div>
+        </div>
+        <div class="relative reveal reveal-delay-2">
+          <div class="dash-card p-6 h-full"><div class="flex items-center gap-3 mb-4"><div class="w-9 h-9 rounded-lg bg-[#0A84FF]/10 border border-[#0A84FF]/20 flex items-center justify-center"><span class="font-mono font-bold text-sm text-[#0A84FF]">03</span></div><span class="text-[11px] font-mono text-[#636366]">ETAPA 3/4</span></div><h3 class="font-sans font-bold text-lg mb-2">Laudo Técnico</h3><p class="text-sm text-[#8E8E93] leading-relaxed">PDF com diagnóstico, fotos, opções de reparo e <strong class="text-[#F2F2F7]">preço fechado</strong>. Você aprova ou não — sem pegadinha.</p></div>
+          <div class="hidden lg:block absolute top-1/2 -right-3.5 z-10 text-[#2A2A31]"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></div>
+        </div>
+        <div class="dash-card dash-card-accent p-6 h-full reveal reveal-delay-3"><div class="flex items-center gap-3 mb-4"><div class="w-9 h-9 rounded-lg bg-[#30D158]/10 border border-[#30D158]/20 flex items-center justify-center"><span class="font-mono font-bold text-sm text-[#30D158]">04</span></div><span class="text-[11px] font-mono text-[#30D158]">ETAPA 4/4 ✓</span></div><h3 class="font-sans font-bold text-lg mb-2 text-[#30D158]">Execução + Garantia</h3><p class="text-sm text-[#8E8E93] leading-relaxed">Serviço executado, nota fiscal emitida, <strong class="text-[#F2F2F7]">garantia por escrito</strong> entregue. Seu carro sai com solução e documento.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- QUEM É MEC                                                   -->
+  <!-- ============================================================ -->
+  <section class="border-t border-[#1C1C21] py-20 lg:py-28 grid-overlay">
+    <div class="max-w-[1280px] mx-auto px-6">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div>
+          <div class="tag bg-[#FF9F0A]/10 text-[#FF9F0A] border border-[#FF9F0A]/20 mb-4 reveal">● Quem é MEEC</div>
+          <h2 class="section-title font-sans font-black text-[2.5rem] lg:text-[3.25rem] leading-tight tracking-[-0.02em] mb-6 reveal">
+            DE GARAGEM<br class="hidden lg:block">
+            DE CASA A <span class="text-gradient-accent">2 ELEVADORES</span>
+          </h2>
+          <div class="space-y-4 text-[#8E8E93] leading-relaxed reveal reveal-delay-1">
+            <p><strong class="text-[#F2F2F7]">@meec_pablo</strong> — Pablo Jhonatan, 12 anos de estrada. Comecei atendendo carro de vizinho na garagem de casa. Hoje a oficina tem <strong class="text-[#F2F2F7]">2 elevadores hidráulicos, 2 mecânicos</strong> e o mesmo princípio: <strong class="text-[#0044CC]">mostrar o serviço acontecendo, não esconder.</strong></p>
+            <p>Atendemos <strong class="text-[#F2F2F7]">todas as marcas</strong>: VW, Fiat, Chevrolet, Toyota, Hyundai, Honda, Renault, Ford. Carros populares, SUVs, picapes. Importados também — temos rede credenciada para peças.</p>
+            <p class="flex items-center gap-2">              <svg class="w-4 h-4 text-[#0044CC]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> <span><strong class="text-[#F2F2F7]">📍 R. 102, Jardim Ceu Azul — Valparaíso de Goiás · GO</strong>, 72871-102</span></p>
+          </div>
+          <div class="flex items-center gap-4 mt-8 reveal reveal-delay-2">
+            <a href="#contato" class="btn-primary text-sm px-6 py-3">
+              Falar com MEEC
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+            <span class="text-xs text-[#636366] font-mono">Resposta em até 2h</span>
+          </div>
+        </div>
+        <div class="dash-card dash-card-accent p-8 lg:p-10 relative reveal reveal-delay-1">
+          <div class="absolute top-0 right-0 w-40 h-40 bg-[#0044CC]/5 rounded-bl-full"></div>
+          <div class="relative">
+            <svg class="w-10 h-10 text-[#0044CC]/20 mb-4" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151C7.566 6.068 6.003 8.789 6.003 11h4v10H0z"/></svg>
+            <blockquote class="font-sans font-bold text-xl lg:text-2xl leading-relaxed text-[#F2F2F7]">"Se eu não sei fazer, eu digo. Se sei, eu faço direito. <span class="text-[#0044CC]">Sem meio termo, sem enrolação.</span>"</blockquote>
+            <div class="flex items-center gap-3 mt-6 pt-6 border-t border-[#1C1C21]">
+              <div class="w-10 h-10 rounded-lg bg-[#0044CC] flex items-center justify-center font-mono font-bold text-sm">MP</div>
+              <div><div class="font-sans font-bold text-sm">@meec_pablo</div><div class="text-xs text-[#636366]">Fundador · Garagem do MEEC</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- ESTOQUE VIRTUAL                                              -->
+  <!-- ============================================================ -->
+  <section id="estoque" class="border-t border-[#1C1C21] py-20 lg:py-28 grid-overlay">
+    <div class="max-w-[1280px] mx-auto px-6">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <div class="tag bg-[#30D158]/10 text-[#30D158] border border-[#30D158]/20 mb-4 justify-center reveal">● Estoque Virtual</div>
+        <h2 class="section-title font-sans font-black text-[2.5rem] lg:text-[3.25rem] leading-tight tracking-[-0.02em] reveal">
+          PEÇAS E KITS<br class="hidden lg:block">
+          <span class="text-gradient-accent">DIRETO DA OFICINA.</span>
+        </h2>
+        <p class="text-[#8E8E93] mt-4 max-w-xl mx-auto leading-relaxed reveal reveal-delay-1">
+          Produtos disponíveis para retirada ou entrega. <strong class="text-[#F2F2F7]">Pagamento via PIX</strong> — 
+          estoque atualizado manualmente pelo MEEC.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4" id="estoque-grid">
+        <!-- Produto 1 -->
+        <div class="dash-card p-4 reveal flex flex-col" data-id="1" data-nome="Kit de Reparos Volkswagen" data-preco="89.90" data-img="media/kit-reparos-volks.jpeg">
+          <div class="media-placeholder aspect-[4/3] mb-4 overflow-hidden rounded-lg">
+            <img src="media/kit-reparos-volks.jpeg" alt="Kit de Reparos Volkswagen" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=flex items-center justify-center h-full><span class=text-[#636366] font-mono text-xs>📦 Sem foto</span></div>'">
+          </div>
+          <div class="flex-1 flex flex-col">
+            <span class="tag bg-[#FF9F0A]/10 text-[#FF9F0A] border-0 text-[9px] mb-2 self-start">KIT</span>
+            <h4 class="font-sans font-bold text-sm mb-1">Kit de Reparos Volkswagen</h4>
+            <p class="text-xs text-[#636366] mb-3 flex-1">Kit completo para revisão básica VW — filtros, velas e componentes.</p>
+            <div class="flex items-center justify-between mt-auto">
+              <span class="font-mono font-bold text-lg text-[#30D158]">R$ 89,90</span>
+              <button class="btn-add-cart w-9 h-9 rounded-lg bg-[#0044CC] hover:bg-[#003399] flex items-center justify-center border-0 cursor-pointer transition-all" onclick="addToCart(this)">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Produto 2 -->
+        <div class="dash-card p-4 reveal reveal-delay-1 flex flex-col" data-id="2" data-nome="Kit de Reparos Gol" data-preco="79.90" data-img="media/kit-reparos-gol.jpeg">
+          <div class="media-placeholder aspect-[4/3] mb-4 overflow-hidden rounded-lg">
+            <img src="media/kit-reparos-gol.jpeg" alt="Kit de Reparos Gol" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=flex items-center justify-center h-full><span class=text-[#636366] font-mono text-xs>📦 Sem foto</span></div>'">
+          </div>
+          <div class="flex-1 flex flex-col">
+            <span class="tag bg-[#FF9F0A]/10 text-[#FF9F0A] border-0 text-[9px] mb-2 self-start">KIT</span>
+            <h4 class="font-sans font-bold text-sm mb-1">Kit de Reparos Gol</h4>
+            <p class="text-xs text-[#636366] mb-3 flex-1">Kit específico para VW Gol — pastilhas de freio, óleo e filtros.</p>
+            <div class="flex items-center justify-between mt-auto">
+              <span class="font-mono font-bold text-lg text-[#30D158]">R$ 79,90</span>
+              <button class="btn-add-cart w-9 h-9 rounded-lg bg-[#0044CC] hover:bg-[#003399] flex items-center justify-center border-0 cursor-pointer transition-all" onclick="addToCart(this)">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Produto 3 -->
+        <div class="dash-card p-4 reveal reveal-delay-2 flex flex-col" data-id="3" data-nome="Kit de Reparos Geral" data-preco="69.90" data-img="media/kit-reparos.jpeg">
+          <div class="media-placeholder aspect-[4/3] mb-4 overflow-hidden rounded-lg">
+            <img src="media/kit-reparos.jpeg" alt="Kit de Reparos Geral" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=flex items-center justify-center h-full><span class=text-[#636366] font-mono text-xs>📦 Sem foto</span></div>'">
+          </div>
+          <div class="flex-1 flex flex-col">
+            <span class="tag bg-[#FF9F0A]/10 text-[#FF9F0A] border-0 text-[9px] mb-2 self-start">KIT</span>
+            <h4 class="font-sans font-bold text-sm mb-1">Kit de Reparos Geral</h4>
+            <p class="text-xs text-[#636366] mb-3 flex-1">Kit universal para manutenção preventiva — ideal para qualquer modelo.</p>
+            <div class="flex items-center justify-between mt-auto">
+              <span class="font-mono font-bold text-lg text-[#30D158]">R$ 69,90</span>
+              <button class="btn-add-cart w-9 h-9 rounded-lg bg-[#0044CC] hover:bg-[#003399] flex items-center justify-center border-0 cursor-pointer transition-all" onclick="addToCart(this)">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Produto 4 -->
+        <div class="dash-card p-4 reveal reveal-delay-3 flex flex-col" data-id="4" data-nome="Troca de Óleo Completa" data-preco="180.00" data-img="media/troca-oleo.jpg">
+          <div class="media-placeholder aspect-[4/3] mb-4 overflow-hidden rounded-lg">
+            <img src="media/troca-oleo.jpg" alt="Troca de Óleo Completa" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=flex items-center justify-center h-full><span class=text-[#636366] font-mono text-xs>📦 Sem foto</span></div>'">
+          </div>
+          <div class="flex-1 flex flex-col">
+            <span class="tag bg-[#0A84FF]/10 text-[#0A84FF] border-0 text-[9px] mb-2 self-start">SERVIÇO</span>
+            <h4 class="font-sans font-bold text-sm mb-1">Troca de Óleo Completa</h4>
+            <p class="text-xs text-[#636366] mb-3 flex-1">Óleo sintético + filtro premium + mão de obra especializada.</p>
+            <div class="flex items-center justify-between mt-auto">
+              <span class="font-mono font-bold text-lg text-[#30D158]">R$ 180,00</span>
+              <button class="btn-add-cart w-9 h-9 rounded-lg bg-[#0044CC] hover:bg-[#003399] flex items-center justify-center border-0 cursor-pointer transition-all" onclick="addToCart(this)">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer do estoque -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-10 p-6 dash-card reveal">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-[#30D158]/10 flex items-center justify-center">
+            <svg class="w-5 h-5 text-[#30D158]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <p class="text-sm font-medium">Estoque verificado manualmente</p>
+            <p class="text-xs text-[#636366]">Consulte disponibilidade via WhatsApp antes de vir retirar</p>
+          </div>
+        </div>
+        <button id="cart-toggle-btn" class="btn-primary text-sm px-6 py-3 relative" onclick="toggleCart()">
+          🛒 Ver Carrinho
+          <span id="cart-count" class="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#FF9F0A] text-white text-[10px] font-bold flex items-center justify-center hidden">0</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- CTA — CONTATO                                                -->
+  <!-- ============================================================ -->
+  <section id="contato" class="border-t border-[#1C1C21] py-20 lg:py-28">
+    <div class="max-w-[1280px] mx-auto px-6">
+      <div class="dash-card dash-card-accent p-8 lg:p-16 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-[#0044CC]/5 to-transparent pointer-events-none"></div>
+        <div class="absolute top-0 right-0 w-64 h-64 bg-[#0044CC]/5 rounded-full blur-3xl"></div>
+        <div class="relative">
+          <div class="text-center max-w-3xl mx-auto mb-12">
+            <div class="tag bg-[#0044CC]/10 text-[#0044CC] border border-[#0044CC]/20 mb-4 justify-center reveal">● Agende agora</div>
+            <h2 class="section-title font-sans font-black text-[2.5rem] lg:text-[3.5rem] leading-tight tracking-[-0.02em] reveal">
+              VAGAS ABERTAS<br>
+              <span class="text-gradient-accent">PRA ESTA SEMANA.</span>
+            </h2>
+            <p class="text-[#8E8E93] mt-4 max-w-lg mx-auto leading-relaxed reveal reveal-delay-1">
+              <strong class="text-[#0044CC]"><span id="cta-vagas">3</span> vagas disponíveis hoje.</strong> Resposta em até 2h no horário comercial. WhatsApp é o canal mais rápido.
+            </p>
+            <div class="flex items-center justify-center gap-2 mt-3 reveal reveal-delay-2">
+              <span class="status-dot live"></span>
+              <span class="text-xs text-[#30D158] font-mono font-medium">Online agora — respondemos em minutos</span>
+            </div>
+          </div>
+
+          <div class="grid lg:grid-cols-5 gap-6 max-w-5xl mx-auto mb-10 reveal reveal-delay-2">
+            <!-- ========== LEFT: FORMULÁRIO DE CONTATO ========== -->
+            <div class="lg:col-span-3">
+              <div class="dash-card p-6 lg:p-8 h-full">
+              <h4 class="font-sans font-bold text-base mb-1">📋 Enviar Mensagem</h4>
+              <p class="text-xs text-[#636366] mb-6">Preencha e enviaremos um orçamento por WhatsApp ou email</p>
+              <form id="contact-form" class="space-y-4">
+                <div class="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-medium text-[#8E8E93] mb-1.5" for="form-name">Seu Nome</label>
+                    <input type="text" id="form-name" name="name" required
+                      class="w-full bg-[#08080A] border border-[#1C1C21] rounded-lg px-4 py-3 text-sm text-[#F2F2F7] placeholder-[#636366] focus:outline-none focus:border-[#0044CC]/50 focus:ring-1 focus:ring-[#0044CC]/20 transition-all"
+                      placeholder="Ex: João Silva">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-[#8E8E93] mb-1.5" for="form-whatsapp">WhatsApp</label>
+                    <input type="tel" id="form-whatsapp" name="whatsapp" required
+                      class="w-full bg-[#08080A] border border-[#1C1C21] rounded-lg px-4 py-3 text-sm text-[#F2F2F7] placeholder-[#636366] focus:outline-none focus:border-[#0044CC]/50 focus:ring-1 focus:ring-[#0044CC]/20 transition-all"
+                      placeholder="Ex: (61) 99999-9999">
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-[#8E8E93] mb-1.5" for="form-email">E-mail (opcional)</label>
+                  <input type="email" id="form-email" name="email"
+                    class="w-full bg-[#08080A] border border-[#1C1C21] rounded-lg px-4 py-3 text-sm text-[#F2F2F7] placeholder-[#636366] focus:outline-none focus:border-[#0044CC]/50 focus:ring-1 focus:ring-[#0044CC]/20 transition-all"
+                    placeholder="Ex: joao@email.com">
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-[#8E8E93] mb-1.5" for="form-message">Mensagem</label>
+                  <textarea id="form-message" name="message" rows="3" required
+                    class="w-full bg-[#08080A] border border-[#1C1C21] rounded-lg px-4 py-3 text-sm text-[#F2F2F7] placeholder-[#636366] focus:outline-none focus:border-[#0044CC]/50 focus:ring-1 focus:ring-[#0044CC]/20 transition-all resize-none"
+                    placeholder="Ex: Gostaria de agendar um diagnóstico para meu Ford Ka 2015..."></textarea>
+                </div>
+                <button type="submit" id="form-submit-btn" class="btn-primary w-full text-sm py-3">
+                  <span id="form-btn-text">Enviar Mensagem</span>
+                  <span id="form-btn-loading" class="hidden">
+                    <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                    Enviando...
+                  </span>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                </button>
+              </form>
+              <div id="form-success" class="hidden mt-4 p-4 bg-[#30D158]/10 border border-[#30D158]/20 rounded-lg text-center">
+                <svg class="w-8 h-8 text-[#30D158] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <p class="text-sm font-medium text-[#30D158]">Mensagem enviada com sucesso! 🎉</p>
+                <p class="text-xs text-[#636366] mt-1">Entraremos em contato em até 2h.</p>
+              </div>
+              <div id="form-error" class="hidden mt-4 p-4 bg-[#0044CC]/10 border border-[#0044CC]/20 rounded-lg text-center">
+                <p class="text-sm font-medium text-[#0044CC]">Erro ao enviar mensagem 😕</p>
+                <p class="text-xs text-[#636366] mt-1">Tente novamente ou nos chame direto no WhatsApp.</p>
+              </div>
+            </div>
+          </div>
+
+            <!-- ========== RIGHT: CARDS DE CONTATO ========== -->
+            <div class="lg:col-span-2 space-y-4">
+              <a href="https://wa.me/5561981257477" class="dash-card p-6 flex flex-col items-center text-center hover:border-[#30D158] group transition-all">
+                <div class="w-14 h-14 rounded-xl bg-[#30D158]/10 border border-[#30D158]/20 flex items-center justify-center mb-4 group-hover:border-[#30D158]/40 group-hover:bg-[#30D158]/20 transition-all">
+                  <svg class="w-7 h-7 text-[#30D158]" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                </div>
+                <h4 class="font-sans font-bold text-base mb-1">WhatsApp</h4>
+                <p class="text-xs text-[#636366] font-mono">(61) 98125-7477</p>
+                <span class="text-[10px] text-[#30D158] mt-2 font-medium">📱 Resposta rápida</span>
+              </a>
+
+              <a href="https://instagram.com/meec_pablo" class="dash-card p-6 flex flex-col items-center text-center hover:border-[#0044CC] group transition-all">                 <div class="w-14 h-14 rounded-xl bg-[#0044CC]/10 border border-[#0044CC]/20 flex items-center justify-center mb-4 group-hover:border-[#0044CC]/40 group-hover:bg-[#0044CC]/20 transition-all">
+                  <svg class="w-7 h-7 text-[#0044CC]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                </div>
+                <h4 class="font-sans font-bold text-base mb-1">Instagram</h4>
+                <p class="text-xs text-[#636366] font-mono">@meec_pablo</p>
+                <span class="text-[10px] text-[#0044CC] mt-2 font-medium">📸 Siga e acompanhe</span>
+              </a>
+
+              <div class="dash-card p-6 flex flex-col items-center text-center">
+                <div class="w-14 h-14 rounded-xl bg-[#FF9F0A]/10 border border-[#FF9F0A]/20 flex items-center justify-center mb-4">
+                  <svg class="w-7 h-7 text-[#FF9F0A]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </div>
+                <h4 class="font-sans font-bold text-base mb-1">Valparaíso · GO</h4>
+                <p class="text-xs text-[#636366] font-mono">R. 102, Jardim Ceu Azul<br>Valparaíso de Goiás · GO, 72871-102</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center reveal reveal-delay-3">
+            <a href="https://wa.me/5561981257477" class="btn-primary text-lg px-10 py-5" style="box-shadow: 0 0 40px rgba(0,68,204,0.3);">
+              💬 FALAR NO WHATSAPP
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+            <p class="text-xs text-[#636366] mt-4 font-mono">
+              Seg–Sex 8h–18h · Sáb 8h–12h · <span class="text-[#30D158]">● Online agora</span>
+            </p>
+          </div>
+
+          <!-- ========== MAPA GOOGLE MAPS ========== -->
+          <div class="max-w-5xl mx-auto mt-10 reveal reveal-delay-3">
+            <div class="dash-card p-1 overflow-hidden" style="border-radius: 12px;">
+              <div class="flex items-center gap-2 px-4 pt-3 pb-2">
+                <svg class="w-4 h-4 text-[#0044CC]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span class="text-xs font-medium text-[#8E8E93]">R. 102, Jardim Ceu Azul — Valparaíso de Goiás · GO, 72871-102</span>
+                <a href="https://www.google.com/maps/dir/?api=1&destination=R.+102%2C+Jardim+Ceu+Azul%2C+Valpara%C3%ADso+de+Goi%C3%A1s%2C+GO" target="_blank" class="ml-auto text-[10px] text-[#0A84FF] font-medium hover:underline">Abrir no Maps →</a>
+              </div>
+              <div class="w-full" style="position: relative; padding-bottom: 40%; border-radius: 0 0 12px 12px; overflow: hidden;">
+                <iframe
+                  src="https://www.google.com/maps?q=R.+102+Jardim+Ceu+Azul+Valpara%C3%ADso+de+Goi%C3%A1s+GO+72871-102+Brazil&output=embed"
+                  style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                  allowfullscreen=""
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- FOOTER                                                       -->
+  <!-- ============================================================ -->
+  <footer class="border-t border-[#1C1C21] py-8">
+    <div class="max-w-[1280px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <img src="media/logo.jpeg" alt="Garagem do MEEC" class="w-8 h-8 rounded-lg object-cover">
+        <div>
+          <p class="font-sans font-bold text-sm">GARAGEM <span class="text-[#0044CC]">DO MEEC</span></p>
+          <p class="font-mono text-[10px] text-[#636366] tracking-widest uppercase">© 2026 · Dados reais, serviço real</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-6 text-xs text-[#636366]">
+        <span class="font-mono">📍 Valparaíso de Goiás · GO</span>
+        <span class="hidden sm:inline text-[#2A2A31]">|</span>
+        <span class="hidden sm:inline font-mono">Feito com dados, não com achismo</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================ -->
+  <!-- MOBILE MENU                                                  -->
+  <!-- ============================================================ -->
+  <div id="mobile-menu" class="fixed inset-0 z-[60] bg-[#08080A]/98 backdrop-blur-xl hidden">
+    <div class="flex flex-col items-center justify-center h-full gap-8 text-center">
+      <button id="mobile-menu-close" class="absolute top-6 right-6 text-[#8E8E93]">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      <a href="#dashboard" class="text-2xl font-bold text-[#F2F2F7]">Dashboard</a>
+      <a href="#servicos" class="text-2xl font-bold text-[#F2F2F7]">Serviços</a>
+      <a href="#galeria" class="text-2xl font-bold text-[#F2F2F7]">Galeria</a>
+      <a href="#estoque" class="text-2xl font-bold text-[#F2F2F7]">Estoque</a>
+      <a href="#numeros" class="text-2xl font-bold text-[#F2F2F7]">Números</a>
+      <a href="#processo" class="text-2xl font-bold text-[#F2F2F7]">Processo</a>
+      <a href="#contato" class="btn-primary text-lg mt-4">Agendar Diagnóstico</a>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- LIGHTBOX                                                     -->
+  <!-- ============================================================ -->
+  <div id="lightbox" class="lightbox-overlay" onclick="closeLightbox()">
+    <div class="close-btn" onclick="closeLightbox()">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </div>
+    <div class="media-placeholder w-full max-w-4xl aspect-video flex items-center justify-center" id="lightbox-content">
+      <span class="text-[#636366] font-mono text-sm">📸 Clique em uma foto para ampliar</span>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- CART SIDEBAR                                                 -->
+  <!-- ============================================================ -->
+  <div id="cart-overlay" class="cart-overlay" onclick="toggleCart()"></div>
+  <div id="cart-sidebar" class="cart-sidebar">
+    <div class="cart-header">
+      <div>
+        <h3 class="font-sans font-bold text-base">🛒 Carrinho</h3>
+        <p class="text-xs text-[#636366]">Itens do seu pedido</p>
+      </div>
+      <button onclick="toggleCart()" class="w-9 h-9 rounded-lg bg-[#1C1C21] hover:bg-[#2A2A31] flex items-center justify-center border-0 cursor-pointer transition-all">
+        <svg class="w-4 h-4 text-[#8E8E93]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="cart-items" id="cart-items">
+      <div class="cart-empty" id="cart-empty">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
+        <span class="font-mono text-xs tracking-wider">CARRINHO VAZIO</span>
+        <p class="text-xs mt-2">Adicione produtos do estoque</p>
+      </div>
+      <div id="cart-list"></div>
+    </div>
+    <div class="cart-footer" id="cart-footer" style="display:none;">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-sm text-[#636366]">Total</span>
+        <span class="font-mono font-bold text-xl text-[#F2F2F7]" id="cart-total">R$ 0,00</span>
+      </div>
+      <button onclick="checkoutWhatsApp()" class="btn-primary w-full text-sm py-3">
+        💬 Comprar via WhatsApp
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </button>
+      <p class="text-[10px] text-[#636366] text-center mt-2 font-mono">Pagamento via PIX · Envio em 24h úteis</p>
+    </div>
+  </div>
+
+
+  <!-- ============================================================ -->
+  <!-- CLIENT PORTAL — MODAL DE CONSULTA                           -->
+  <!-- ============================================================ -->
+  <div id="client-portal-overlay" class="fixed inset-0 z-[90] bg-[#08080A]/90 backdrop-blur-xl hidden" onclick="if(event.target===this)closeClientPortal()">
+    <div class="min-h-screen flex items-center justify-center p-4">
+      <div class="dash-card w-full max-w-lg p-6 lg:p-8" onclick="event.stopPropagation()">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h3 class="font-sans font-bold text-lg">📋 Consultar Atendimento</h3>
+            <p class="text-xs text-[#636366]">Digite seu WhatsApp para saber o status do seu serviço</p>
+          </div>
+          <button onclick="closeClientPortal()" class="w-9 h-9 rounded-lg bg-[#1C1C21] hover:bg-[#2A2A31] flex items-center justify-center border-0 cursor-pointer transition-all">
+            <svg class="w-4 h-4 text-[#8E8E93]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <!-- Search Form -->
+        <div class="space-y-4" id="client-portal-search">
+          <div>
+            <label class="block text-xs font-medium text-[#8E8E93] mb-1.5">Seu WhatsApp</label>
+            <input type="tel" id="portal-whatsapp-input"
+              class="w-full bg-[#08080A] border border-[#1C1C21] rounded-lg px-4 py-3 text-sm text-[#F2F2F7] placeholder-[#636366] focus:outline-none focus:border-[#0044CC]/50 focus:ring-1 focus:ring-[#0044CC]/20 transition-all"
+              placeholder="Ex: (61) 99999-9999"
+              onkeydown="if(event.key==='Enter')searchLead()">
+          </div>
+          <button onclick="searchLead()" id="portal-search-btn" class="btn-primary w-full text-sm py-3 justify-center">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            Consultar
+          </button>
+          <div id="portal-error" class="hidden text-xs text-[#FF453A] text-center"></div>
+        </div>
+
+        <!-- Loading -->
+        <div id="portal-loading" class="hidden text-center py-8">
+          <svg class="animate-spin w-8 h-8 text-[#0044CC] mx-auto mb-3" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          <p class="text-sm text-[#636366]">Consultando...</p>
+        </div>
+
+        <!-- Results -->
+        <div id="portal-results" class="hidden space-y-4">
+          <div id="portal-leads-list"></div>
+          <button onclick="resetPortalSearch()" class="btn-secondary w-full text-xs py-2 justify-center">
+            ← Nova consulta
+          </button>
+        </div>
+
+        <!-- Not found -->
+        <div id="portal-notfound" class="hidden text-center py-8">
+          <svg class="w-10 h-10 text-[#636366] mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <p class="text-sm font-medium text-[#F2F2F7]">Nenhum atendimento encontrado 😕</p>
+          <p class="text-xs text-[#636366] mt-1">Verifique se o número digitado é o mesmo usado no formulário de contato.</p>
+          <button onclick="resetPortalSearch()" class="btn-secondary mt-4 text-xs py-2 justify-center w-full">
+            ← Tentar novamente
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSTALL BANNER (PWA)                                         -->
+  <!-- ============================================================ -->
+  <div id="pwa-banner" class="pwa-banner">
+    <div class="icon">GM</div>
+    <div class="flex-1">
+      <div class="font-sans font-bold text-sm">Garagem do MEEC</div>
+      <div class="text-xs text-[#636366]">Instale como app · acesso rápido</div>
+    </div>
+    <button id="pwa-install-btn" class="btn-primary text-xs px-4 py-2">Instalar</button>
+    <button id="pwa-dismiss-btn" class="text-[#636366] hover:text-[#F2F2F7] p-1">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- JAVASCRIPT                                                   -->
+  <!-- ============================================================ -->
+  <script>
+    // --- Mobile Menu ---
+    (function() {
+      const menuBtn = document.getElementById('mobile-menu-btn');
+      const menu = document.getElementById('mobile-menu');
+      const closeBtn = document.getElementById('mobile-menu-close');
+      if (menuBtn && menu && closeBtn) {
+        menuBtn.addEventListener('click', () => menu.classList.remove('hidden'));
+        closeBtn.addEventListener('click', () => menu.classList.add('hidden'));
+        menu.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => menu.classList.add('hidden'));
+        });
+      }
+    })();
+
+    // --- Scroll Reveal ---
+    (function() {
+      const revealElements = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+        revealElements.forEach(el => observer.observe(el));
+        // Already visible elements
+        revealElements.forEach(el => {
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight) el.classList.add('visible');
+        });
+      } else {
+        revealElements.forEach(el => el.classList.add('visible'));
+      }
+    })();
+
+    // --- Counter Animation ---
+    (function() {
+      const counters = document.querySelectorAll('.counter');
+      counters.forEach(counter => {
+        const target = parseInt(counter.dataset.target);
+        if (isNaN(target)) return;
+        const suffix = counter.dataset.suffix || '';
+        const animate = () => {
+          const current = parseInt(counter.textContent) || 0;
+          if (current < target) {
+            const step = Math.max(1, Math.ceil((target - current) / 8));
+            counter.textContent = Math.min(current + step, target);
+            requestAnimationFrame(animate);
+          } else {
+            counter.textContent = target;
+          }
+        };
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              animate();
+              observer.unobserve(entry);
+            }
+          });
+        }, { threshold: 0.5 });
+        observer.observe(counter);
+      });
+    })();
+
+    // --- Lightbox ---
+    function openLightbox(src, isPlaceholder) {
+      const lb = document.getElementById('lightbox');
+      const content = document.getElementById('lightbox-content');
+      if (!lb || !content) return;
+      
+      if (isPlaceholder || !src) {
+        content.innerHTML = '<div class="flex flex-col items-center justify-center gap-4 p-12 text-center"><svg class="w-16 h-16 text-[#636366] opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><span class="font-sans font-bold text-xl text-[#F2F2F7]">📸 Adicione sua foto real aqui!</span><p class="text-sm text-[#636366] max-w-md">Salve a imagem na pasta <code class="text-[#FF9F0A] font-mono">media/</code> do projeto e substitua o placeholder no HTML.</p><a href="#media-guide" class="text-xs text-[#0A84FF] font-medium underline underline-offset-2" onclick="closeLightbox()">Ver guia de mídia →</a></div>';
+      } else {
+        content.innerHTML = `<img src="${src}" alt="Foto ampliada" style="max-width:90vw;max-height:90vh;border-radius:12px;object-fit:contain;">`;
+      }
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      const lb = document.getElementById('lightbox');
+      if (lb) lb.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+
+    // --- Before/After Slider ---
+    (function() {
+      document.querySelectorAll('.ba-container').forEach(container => {
+        const before = container.querySelector('.ba-before');
+        const handle = container.querySelector('.ba-handle');
+        if (!before || !handle) return;
+
+        function updatePosition(x) {
+          const rect = container.getBoundingClientRect();
+          let pos = ((x - rect.left) / rect.width) * 100;
+          pos = Math.max(10, Math.min(90, pos));
+          before.style.width = pos + '%';
+          handle.style.left = pos + '%';
+        }
+
+        container.addEventListener('mousedown', (e) => {
+          updatePosition(e.clientX);
+          function onMove(e) { updatePosition(e.clientX); }
+          function onUp() { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('mouseup', onUp);
+        });
+
+        container.addEventListener('touchstart', (e) => {
+          const touch = e.touches[0];
+          updatePosition(touch.clientX);
+          function onMove(e) { updatePosition(e.touches[0].clientX); }
+          function onUp() { document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onUp); }
+          document.addEventListener('touchmove', onMove);
+          document.addEventListener('touchend', onUp);
+        });
+      });
+    })();
+
+    // --- PWA Install ---
+    (function() {
+      let deferredPrompt = null;
+      const banner = document.getElementById('pwa-banner');
+      const installBtn = document.getElementById('pwa-install-btn');
+      const dismissBtn = document.getElementById('pwa-dismiss-btn');
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (banner && !localStorage.getItem('pwa-dismissed')) {
+          banner.classList.add('show');
+        }
+      });
+
+      if (installBtn && banner) {
+        installBtn.addEventListener('click', async () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const result = await deferredPrompt.userChoice;
+            if (result.outcome === 'accepted') {
+              console.log('PWA installed');
+            }
+            deferredPrompt = null;
+          }
+          banner.classList.remove('show');
+        });
+      }
+
+      if (dismissBtn && banner) {
+        dismissBtn.addEventListener('click', () => {
+          banner.classList.remove('show');
+          localStorage.setItem('pwa-dismissed', 'true');
+        });
+      }
+
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      }
+    })();
+
+    // --- Contact Form (Formspree) ---
+    (function() {
+      const form = document.getElementById('contact-form');
+      if (!form) return;
+
+      const btnText = document.getElementById('form-btn-text');
+      const btnLoading = document.getElementById('form-btn-loading');
+      const submitBtn = document.getElementById('form-submit-btn');
+      const successDiv = document.getElementById('form-success');
+      const errorDiv = document.getElementById('form-error');
+
+      const FORMSPREE_ID = "xykqdkkz";
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        successDiv.classList.add('hidden');
+        errorDiv.classList.add('hidden');
+
+        btnText.classList.add('hidden');
+        btnLoading.classList.remove('hidden');
+        submitBtn.disabled = true;
+
+        const name = document.getElementById('form-name').value.trim();
+        const whatsapp = document.getElementById('form-whatsapp').value.trim();
+        const email = document.getElementById('form-email').value.trim();
+        const message = document.getElementById('form-message').value.trim();
+
+        try {
+          const localRes = await fetch('/api/leads', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, whatsapp, email, message, origem: 'site' })
+          });
+
+          if (!localRes.ok) throw new Error('Erro ao salvar lead');
+
+          // Fire-and-forget to Formspree as backup
+          fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ name, whatsapp, email, message, _subject: `Novo lead - Garagem MEEC: ${name}` })
+          }).catch(() => {});
+
+          successDiv.classList.remove('hidden');
+          form.reset();
+          successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } catch (err) {
+          errorDiv.classList.remove('hidden');
+          console.error('Form error:', err);
+        } finally {
+          btnText.classList.remove('hidden');
+          btnLoading.classList.add('hidden');
+          submitBtn.disabled = false;
+        }
+      });
+
+      // WhatsApp input formatting
+      const whatsappInput = document.getElementById('form-whatsapp');
+      if (whatsappInput) {
+        whatsappInput.addEventListener('input', (e) => {
+          let value = e.target.value.replace(/\D/g, '');
+          if (value.length > 11) value = value.slice(0, 11);
+          if (value.length > 6) {
+            value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
+          } else if (value.length > 2) {
+            value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+          } else if (value.length > 0) {
+            value = `(${value}`;
+          }
+          e.target.value = value;
+        });
+      }
+    })();
+
+    // --- Dynamic "vagas" counter (daily simulation) ---
+    (function() {
+      const vagas = Math.max(1, 5 - (new Date().getDay() % 5));
+      document.querySelectorAll('#vagas-num, #hero-vagas, #cta-vagas').forEach(el => {
+        if (el) el.textContent = vagas;
+      });
+    })();
+
+    // --- Client Portal ---
+    function openClientPortal() {
+      document.getElementById('client-portal-overlay').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      resetPortalSearch();
+    }
+    function closeClientPortal() {
+      document.getElementById('client-portal-overlay').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    // Helper: escape HTML
+    function esc(str) {
+      const div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
+    }
+
+    const PIPELINE_DISPLAY = {
+      lead_qualificado: { etapa: 1, total: 5, label: 'Lead Qualificado', color: '#0A84FF', icon: '🔵', desc: 'Recebemos seu contato e estamos analisando.' },
+      lead_prospectado: { etapa: 2, total: 5, label: 'Lead Prospectado', color: '#FF9F0A', icon: '🟡', desc: 'Já falamos com você e estamos entendendo suas necessidades.' },
+      orcamento_ativo: { etapa: 3, total: 5, label: 'Orçamento Ativo', color: '#5AC8FA', icon: '🔵', desc: 'Seu orçamento está sendo preparado pela nossa equipe.' },
+      orcamento_fechado: { etapa: 4, total: 5, label: 'Orçamento Fechado', color: '#30D158', icon: '🟢', desc: 'Orçamento aprovado! Seu veículo está na fila para o serviço.' },
+      orcamento_finalizado: { etapa: 5, total: 5, label: 'Serviço Finalizado', color: '#636366', icon: '⚪', desc: 'Serviço concluído! Seu carro já está pronto.' }
+    };
+
+    async function searchLead() {
+      const input = document.getElementById('portal-whatsapp-input');
+      const error = document.getElementById('portal-error');
+      const searchBtn = document.getElementById('portal-search-btn');
+      const searchDiv = document.getElementById('client-portal-search');
+      const loadingDiv = document.getElementById('portal-loading');
+      const resultsDiv = document.getElementById('portal-results');
+      const notFoundDiv = document.getElementById('portal-notfound');
+
+      // Clean number for search
+      let whatsapp = input.value.trim();
+      const clean = whatsapp.replace(/\D/g, '');
+      if (clean.length < 10) {
+        error.textContent = 'Digite um número de WhatsApp válido';
+        error.classList.remove('hidden');
+        return;
+      }
+      error.classList.add('hidden');
+
+      // Show loading
+      searchDiv.classList.add('hidden');
+      loadingDiv.classList.remove('hidden');
+      resultsDiv.classList.add('hidden');
+      notFoundDiv.classList.add('hidden');
+
+      try {
+        const res = await fetch(`/api/leads/consulta/${encodeURIComponent(whatsapp)}`);
+        const data = await res.json();
+
+        loadingDiv.classList.add('hidden');
+
+        if (!data.found) {
+          notFoundDiv.classList.remove('hidden');
+          return;
+        }
+
+        resultsDiv.classList.remove('hidden');
+        const list = document.getElementById('portal-leads-list');
+        
+        list.innerHTML = data.leads.map(lead => {
+          const p = PIPELINE_DISPLAY[lead.status] || { etapa: 0, total: 5, label: lead.status, color: '#636366', icon: '📋', desc: '' };
+          const pct = (p.etapa / p.total) * 100;
+          const date = new Date(lead.created_at).toLocaleDateString('pt-BR');
+          const valor = lead.valor ? `R$ ${parseFloat(lead.valor).toFixed(2).replace('.', ',')}` : '';
+
+          return `<div class="dash-card p-4">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <div class="font-sans font-bold text-sm">${esc(lead.name)}</div>
+                <div class="text-[10px] text-[#636366] font-mono">Desde ${date}${lead.origem ? ' · ' + lead.origem : ''}</div>
+              </div>
+              <div class="text-right">
+                <div class="tag" style="background: ${p.color}15; color: ${p.color}; border: 1px solid ${p.color}30;">
+                  ${p.icon} ${p.label}
+                </div>
+                ${valor ? `<div class="text-[11px] font-mono text-[#30D158] mt-1">${valor}</div>` : ''}
+              </div>
+            </div>
+            <div class="flex items-center gap-2 mb-2">
+              <div class="progress-bar flex-1">
+                <div class="progress-bar-fill" style="width: ${pct}%; background: ${p.color}"></div>
+              </div>
+              <span class="text-[10px] font-mono text-[#636366]">${p.etapa}/${p.total}</span>
+            </div>
+            <p class="text-xs text-[#8E8E93]">${p.desc}</p>
+            ${lead.veiculo ? `<p class="text-xs text-[#636366] mt-2">🚗 ${esc(lead.veiculo)}${lead.servico_interesse ? ' · ' + esc(lead.servico_interesse) : ''}</p>` : ''}
+            ${lead.message ? `<p class="text-xs text-[#636366] mt-1 italic">"${esc(lead.message.substring(0, 100))}"</p>` : ''}
+          </div>`;
+        }).join('');
+      } catch (err) {
+        loadingDiv.classList.add('hidden');
+        searchDiv.classList.remove('hidden');
+        error.textContent = 'Erro ao consultar. Tente novamente.';
+        error.classList.remove('hidden');
+        console.error('Portal error:', err);
+      }
+    }
+
+    function resetPortalSearch() {
+      document.getElementById('client-portal-search').classList.remove('hidden');
+      document.getElementById('portal-loading').classList.add('hidden');
+      document.getElementById('portal-results').classList.add('hidden');
+      document.getElementById('portal-notfound').classList.add('hidden');
+      document.getElementById('portal-error').classList.add('hidden');
+      document.getElementById('portal-whatsapp-input').value = '';
+      document.getElementById('portal-whatsapp-input').focus();
+    }
+
+    // Also listen for Escape key on portal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const portal = document.getElementById('client-portal-overlay');
+        if (portal && !portal.classList.contains('hidden')) closeClientPortal();
+      }
+    });
+
+    // --- Cart System ---
+    let cart = JSON.parse(localStorage.getItem('gmec_cart') || '[]');
+
+    function saveCart() {
+      localStorage.setItem('gmec_cart', JSON.stringify(cart));
+      updateCartUI();
+    }
+
+    function addToCart(btn) {
+      const card = btn.closest('[data-id]');
+      if (!card) return;
+      const id = card.dataset.id;
+      const nome = card.dataset.nome;
+      const preco = parseFloat(card.dataset.preco);
+      const img = card.dataset.img;
+
+      const existing = cart.find(item => item.id === id);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ id, nome, preco, img, qty: 1 });
+      }
+      saveCart();
+      showToast(`✓ ${nome} adicionado ao carrinho`);
+    }
+
+    function removeFromCart(id) {
+      cart = cart.filter(item => item.id !== id);
+      saveCart();
+    }
+
+    function updateQty(id, delta) {
+      const item = cart.find(i => i.id === id);
+      if (!item) return;
+      item.qty = Math.max(1, item.qty + delta);
+      saveCart();
+    }
+
+    function toggleCart() {
+      const sidebar = document.getElementById('cart-sidebar');
+      const overlay = document.getElementById('cart-overlay');
+      if (!sidebar || !overlay) return;
+      const isOpen = sidebar.classList.contains('open');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+      document.body.style.overflow = isOpen ? '' : 'hidden';
+      if (!isOpen) renderCartItems();
+    }
+
+    function renderCartItems() {
+      const list = document.getElementById('cart-list');
+      const empty = document.getElementById('cart-empty');
+      const footer = document.getElementById('cart-footer');
+      if (!list || !empty || !footer) return;
+
+      if (cart.length === 0) {
+        empty.style.display = 'flex';
+        list.innerHTML = '';
+        footer.style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      footer.style.display = 'block';
+
+      list.innerHTML = cart.map(item => `
+        <div class="cart-item">
+          <img src="${item.img}" alt="${item.nome}" class="cart-item-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 56 56%22%3E%3Crect width=%2256%22 height=%2256%22 fill=%22%231C1C21%22/%3E%3Ctext x=%2228%22 y=%2232%22 text-anchor=%22middle%22 fill=%22%23636366%22 font-size=%2218%22%3E📦%3C/text%3E%3C/svg%3E'">
+          <div class="cart-item-info">
+            <div class="name">${item.nome}</div>
+            <div class="price">R$ ${item.preco.toFixed(2)}</div>
+          </div>
+          <div class="cart-item-qty">
+            <button onclick="updateQty('${item.id}', -1)">−</button>
+            <span>${item.qty}</span>
+            <button onclick="updateQty('${item.id}', 1)">+</button>
+          </div>
+          <button onclick="removeFromCart('${item.id}')" class="w-7 h-7 rounded-lg bg-[#1C1C21] hover:bg-[#FF3B30]/20 flex items-center justify-center border-0 cursor-pointer transition-all">
+            <svg class="w-3.5 h-3.5 text-[#636366]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
+        </div>
+      `).join('');
+
+      updateCartTotal();
+    }
+
+    function updateCartTotal() {
+      const total = cart.reduce((sum, item) => sum + item.preco * item.qty, 0);
+      const el = document.getElementById('cart-total');
+      if (el) el.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    }
+
+    function updateCartUI() {
+      const count = cart.reduce((sum, item) => sum + item.qty, 0);
+      const badge = document.getElementById('cart-count');
+      if (badge) {
+        if (count > 0) {
+          badge.textContent = count;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+    }
+
+    function checkoutWhatsApp() {
+      if (cart.length === 0) return;
+      const total = cart.reduce((sum, item) => sum + item.preco * item.qty, 0);
+      let message = '🛒 *NOVO PEDIDO - ESTOQUE MEEC*\n\n';
+      message += '*ITENS:*\n';
+      cart.forEach(item => {
+        message += `${item.qty}x ${item.nome} — R$ ${(item.preco * item.qty).toFixed(2).replace('.', ',')}\n`;
+      });
+      message += `\n*TOTAL: R$ ${total.toFixed(2).replace('.', ',')}*\n`;
+      message += `\n*FORMA DE PAGAMENTO:* PIX\n`;
+      message += `*CHAVE PIX:* (61) 98125-7477\n`;
+      message += `*TITULAR:* Pablo Jhonatan\n\n`;
+      message += `📌 *RETIRADA:* R. 102, Jardim Ceu Azul - Valparaíso de Goiás - GO\n`;
+      message += `⏱ *HORÁRIO:* Seg-Sex 8h-18h / Sáb 8h-12h\n\n`;
+      message += `Após o pagamento, envie o comprovante para confirmarmos o pedido! ✅`;
+
+      const encoded = encodeURIComponent(message);
+      window.open(`https://wa.me/5561981257477?text=${encoded}`, '_blank');
+    }
+
+    function showToast(msg) {
+      const existing = document.querySelector('.custom-toast');
+      if (existing) existing.remove();
+      const toast = document.createElement('div');
+      toast.className = 'custom-toast fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] bg-[#30D158] text-[#08080A] px-6 py-3 rounded-lg font-medium text-sm shadow-lg transition-all duration-300';
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(20px)';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+      });
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(-20px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
+
+    // --- Logo sound toggle ---
+    (function() {
+      const soundBtn = document.getElementById('logo-sound-toggle');
+      const logoVideo = document.querySelector('.logo-video');
+      if (soundBtn && logoVideo) {
+        soundBtn.addEventListener('click', () => {
+          logoVideo.muted = !logoVideo.muted;
+          soundBtn.textContent = logoVideo.muted ? '🔇' : '🔊';
+        });
+      }
+    })();
+
+    // Init cart UI
+    updateCartUI();
+    // --- QR Code Generator ---
+    (function() {
+      const container = document.getElementById("qr-code");
+      if (!container) return;
+      const pattern = [
+        1,1,1,1,1,0,1,1,1,
+        1,0,0,0,1,0,1,0,1,
+        1,0,1,1,1,0,1,0,1,
+        1,0,1,1,1,0,1,1,1,
+        1,1,1,0,0,1,1,1,1,
+        0,0,1,0,1,0,0,0,0,
+        1,1,1,1,0,1,1,0,1,
+        1,0,1,0,1,0,1,0,1,
+        1,1,1,1,0,0,1,1,1
+      ];
+      pattern.forEach(function(v) {
+        var cell = document.createElement("div");
+        cell.className = "qr-cell " + (v === 1 ? "on" : v === 2 ? "accent" : "off");
+        container.appendChild(cell);
+      });
+      container.addEventListener("click", function() {
+        container.style.transform = "scale(0.95)";
+        setTimeout(function() { container.style.transform = ""; }, 150);
+      });
+    })();
+
+    function scrollToQRCode() {
+      var qr = document.getElementById("qr-code");
+      if (!qr) return;
+      qr.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeLightbox();
+    });
+
+  </script>
+</body>
+</html>
