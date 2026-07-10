@@ -466,6 +466,9 @@
         <a href="#" id="crm-link" target="_blank" class="text-sm font-medium text-[#8E8E93] hover:text-[#F5C800] transition-colors flex items-center gap-1">
           🔑 Painel Administrativo
         </a>
+        <a href="#" id="crm-store-link" target="_blank" class="text-sm font-medium text-[#8E8E93] hover:text-[#30D158] transition-colors flex items-center gap-1">
+          🛒 Loja MEEC
+        </a>
         <a href="#contato" class="btn-primary text-xs px-5 py-2.5">
           Agendar Diagnóstico
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -1219,7 +1222,9 @@
       <a href="#numeros" class="text-2xl font-bold text-[#F2F2F7]">Números</a>
       <a href="#processo" class="text-2xl font-bold text-[#F2F2F7]">Processo</a>
       <a href="#" id="mobile-crm-link" target="_blank" class="text-2xl font-bold text-[#F5C800]">🔑 Painel Administrativo</a>
+      <a href="#" id="mobile-crm-store-link" target="_blank" class="text-2xl font-bold text-[#30D158]">🛒 Loja MEEC</a>
       <a href="#contato" class="btn-primary text-lg mt-4">Agendar Diagnóstico</a>
+      <a href="#" id="mobile-crm-store-link" target="_blank" class="text-2xl font-bold text-[#30D158]">🛒 Loja MEEC</a>
     </div>
   </div>
 
@@ -1450,20 +1455,17 @@
         });
     })();
 
-    // --- Fetch CRM Config ---
+    // --- CRM Links (hardcoded — site is static on Netlify) ---
     (function() {
-      fetch('/api/config')
-        .then(res => res.json())
-        .then(data => {
-          if (data.crmUrl) {
-            const baseUrl = data.crmUrl.endsWith('/') ? data.crmUrl.slice(0, -1) : data.crmUrl;
-            const crmLink = document.getElementById('crm-link');
-            const mobileCrmLink = document.getElementById('mobile-crm-link');
-            if (crmLink) crmLink.href = baseUrl + '/login';
-            if (mobileCrmLink) mobileCrmLink.href = baseUrl + '/login';
-          }
-        })
-        .catch(err => console.error('Error fetching CRM config:', err));
+      const CRM_URL = 'https://crm-garagem-production.up.railway.app';
+      const crmLink = document.getElementById('crm-link');
+      const mobileCrmLink = document.getElementById('mobile-crm-link');
+      const crmStoreLink = document.getElementById('crm-store-link');
+      const mobileCrmStoreLink = document.getElementById('mobile-crm-store-link');
+      if (crmLink) crmLink.href = CRM_URL + '/login';
+      if (mobileCrmLink) mobileCrmLink.href = CRM_URL + '/login';
+      if (crmStoreLink) crmStoreLink.href = CRM_URL + '/meec-stock';
+      if (mobileCrmStoreLink) mobileCrmStoreLink.href = CRM_URL + '/meec-stock';
     })();
 
     // --- Scroll Reveal ---
@@ -1617,7 +1619,7 @@
       }
     })();
 
-    // --- Contact Form (Formspree) ---
+    // --- Contact Form → CRM + WhatsApp ---
     (function() {
       const form = document.getElementById('contact-form');
       if (!form) return;
@@ -1628,7 +1630,8 @@
       const successDiv = document.getElementById('form-success');
       const errorDiv = document.getElementById('form-error');
 
-      const FORMSPREE_ID = "xykqdkkz";
+      const CRM_LEADS_URL = 'https://crm-garagem-production.up.railway.app/api/public/leads';
+      const WHATSAPP_NUMBER = '5561981257477';
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -1645,28 +1648,55 @@
         const email = document.getElementById('form-email').value.trim();
         const message = document.getElementById('form-message').value.trim();
 
+        const cleanPhone = whatsapp.replace(/\D/g, '');
+
         try {
-          const localRes = await fetch('/api/leads', {
+          // 1. Send lead to CRM (public endpoint, no auth)
+          const crmRes = await fetch(CRM_LEADS_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, whatsapp, email, message, origem: 'site' })
+            body: JSON.stringify({
+              name: name,
+              phone: cleanPhone,
+              email: email,
+              message: message,
+              serviceType: 'Diagnóstico Automotivo'
+            })
           });
 
-          if (!localRes.ok) throw new Error('Erro ao salvar lead');
+          if (!crmRes.ok) throw new Error('CRM error: ' + crmRes.status);
 
-          // Fire-and-forget to Formspree as backup
-          fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ name, whatsapp, email, message, _subject: `Novo lead - Garagem MEEC: ${name}` })
-          }).catch(() => {});
-
+          // 2. Show success
           successDiv.classList.remove('hidden');
           form.reset();
           successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+          // 3. Open WhatsApp with submitted info
+          setTimeout(() => {
+            const waMsg = encodeURIComponent(
+              'Olá! Acabei de enviar uma mensagem pelo site da Garagem do MEEC.\n\n' +
+              '📋 Meus dados:\n' +
+              'Nome: ' + name + '\n' +
+              'WhatsApp: ' + whatsapp + '\n' +
+              (email ? 'Email: ' + email + '\n' : '') +
+              '\n💬 Mensagem: ' + message + '\n\n' +
+              'Aguardando retorno! 🚗'
+            );
+            window.open('https://wa.me/' + WHATSAPP_NUMBER + '?text=' + waMsg, '_blank');
+          }, 1500);
         } catch (err) {
-          errorDiv.classList.remove('hidden');
           console.error('Form error:', err);
+          errorDiv.classList.remove('hidden');
+          const waMsg = encodeURIComponent(
+            'Olá! Tentei enviar mensagem pelo site da Garagem do MEEC.\n\n' +
+            '📋 Meus dados:\n' +
+            'Nome: ' + name + '\n' +
+            'WhatsApp: ' + whatsapp + '\n' +
+            (email ? 'Email: ' + email + '\n' : '') +
+            '\n💬 Mensagem: ' + message + '\n\n' +
+            'Meu WhatsApp: ' + whatsapp
+          );
+          window.open('https://wa.me/' + WHATSAPP_NUMBER + '?text=' + waMsg, '_blank');
         } finally {
           btnText.classList.remove('hidden');
           btnLoading.classList.add('hidden');
@@ -1692,13 +1722,6 @@
       }
     })();
 
-    // --- Dynamic "vagas" counter (daily simulation) ---
-    (function() {
-      const vagas = Math.max(1, 5 - (new Date().getDay() % 5));
-      document.querySelectorAll('#vagas-num, #hero-vagas, #cta-vagas').forEach(el => {
-        if (el) el.textContent = vagas;
-      });
-    })();
 
     // --- Client Portal ---
     function openClientPortal() {
