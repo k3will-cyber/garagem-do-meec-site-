@@ -69,6 +69,27 @@ function createApp(db) {
   // Static files
   app.use(express.static(path.join(__dirname, '..')));
 
+  // ─── Health Check (BEFORE tenant middleware — must respond instantly) ─
+  app.get('/health', (req, res) => {
+    res.json({
+      status: 'ok',
+      time: new Date().toISOString(),
+      environment: NODE_ENV,
+      database: db.type,
+      uptime: process.uptime()
+    });
+  });
+
+  app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', uptime: process.uptime() });
+  });
+
+  app.get('/api/config', (req, res) => {
+    res.json({
+      crmUrl: process.env.CRM_URL || 'http://localhost:5000'
+    });
+  });
+
   // ─── Multi-tenant Middleware ─────────────────────────────────────
   const tenant = createTenantMiddleware(db);
   app.use(tenant.middleware);
@@ -107,27 +128,6 @@ function createApp(db) {
   const authControllerInstance = new authController(authService);
   const leadsControllerInstance = new leadsController(leadsService);
   const osControllerInstance = new osController(osService);
-
-  // ─── Health Check (responds instantly — no DB query) ────────────
-  app.get('/health', (req, res) => {
-    res.json({
-      status: 'ok',
-      time: new Date().toISOString(),
-      environment: NODE_ENV,
-      database: db.type,
-      uptime: process.uptime()
-    });
-  });
-
-  app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', uptime: process.uptime() });
-  });
-
-  app.get('/api/config', (req, res) => {
-    res.json({
-      crmUrl: process.env.CRM_URL || 'http://localhost:5000'
-    });
-  });
 
   // ─── Auth Routes ─────────────────────────────────────────────────
   app.post('/api/login', (req, res) => authControllerInstance.login(req, res));
