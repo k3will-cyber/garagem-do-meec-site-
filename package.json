@@ -7,7 +7,6 @@
     "start": "node server.js",
     "dev": "node server.js",
     "seed": "node seed.js",
-    "install": "node install.js",
     "setup": "node install.js --quick"
   },
   "keywords": [
