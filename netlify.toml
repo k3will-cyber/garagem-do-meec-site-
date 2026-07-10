@@ -11,6 +11,10 @@
 [build.processing]
   skip_processing = true
 
+[build.ignore]
+  # Ignore backend files not needed for static deployment
+  patterns = ["*.js", "src/*", "data/*", "node_modules/*"]
+
 # ─── Redirects ──────────────────────────────────────────────────
 # SPA: all non-file routes serve index.html
 [[redirects]]
