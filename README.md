@@ -1,116 +1,112 @@
-# Garagem do MEEC - Sistema de Gestão para Oficinas Mecânicas
+# 🚗 Garagem do MEEC — Site Institucional
 
-Sistema completo de gestão para oficinas mecânicas com arquitetura multi-tenant (SaaS), integrado com WhatsApp, controle de leads, ordens de serviço, financeiro, estoque e muito mais.
+Site institucional da **Garagem do MEEC**, oficina mecânica em Valparaíso de Goiás.
 
-## 🚀 Funcionalidades
+> **Status:** Site estático hospedado no **Netlify** com dados via API do CRM.
 
-- **Gestão de Leads**: Pipeline de vendas com 5 estágios (Lead Qualificado → Orçamento Finalizado)
-- **Ordens de Serviço**: Controle completo de OS com peças, mão de obra e pagamentos
-- **Financeiro**: Controle de receitas e despesas, relatórios e gráficos
-- **Estoque**: Gestão de produtos, kits e peças com alertas de baixo nível
-- **Multi-tenant (SaaS)**: Arquitetura projetada para múltiplas oficinas com isolamento de dados
-- **Integração WhatsApp**: Notificações automáticas, confirmações e lembretes
-- **Login Social**: Autenticação via Google OAuth
-- **Roleta de Prêmios**: Sistema de gamificação para engajar clientes (MEEC OFERTAS)
-- **Dashboard Analítico**: Visão geral com KPIs e gráficos em tempo real
-- **Controle de Acesso**: Sistema de roles (Super Admin, Admin, Operador) com permissões granulares
+---
 
-## 🛠️ Tecnologias Utilizadas
+## 🌐 Acessos
 
-- **Backend**: Node.js com Express.js
-- **Frontend**: HTML5, CSS3 (Tailwind CSS), JavaScript Vanilla
-- **Banco de Dados**: SQLite (com suporte a múltiplos tenants)
-- **Autenticação**: Passport.js (Local + Google OAuth 2.0)
-- **WhatsApp**: whatsapp-web.js para integração completa
-- **APIs Externas**: Supabase (opcional para sincronização)
-- **Deploy**: Compatível com Railway, Vercel, Docker, ou qualquer servidor Node
+| O quê | URL |
+|:------|:----|
+| **Site Público** | `https://garagem-do-meec.netlify.app` |
+| **Painel Administrativo (CRM)** | [`https://crm-garagem-production.up.railway.app/login`](https://crm-garagem-production.up.railway.app/login) |
+| **Loja MEEC** | [`https://crm-garagem-production.up.railway.app/meec-stock`](https://crm-garagem-production.up.railway.app/meec-stock) |
 
-## 📋 Pré-requisitos
+---
 
-- Node.js >= 18.x
-- npm >= 9.x
-- Conta no Google Cloud (para OAuth opcional)
-- Número de WhatsApp para integração (opcional)
+## ✨ Funcionalidades
 
-## 🔧 Instalação
+- **Dashboard interativo** com métricas, vagas e QR code animado
+- **Galeria** com lightbox para fotos reais dos serviços
+- **Before/After interativo** com slider de comparação
+- **Estoque Virtual** carregado em tempo real do CRM (60+ produtos)
+- **Carrinho de compras** com finalização via WhatsApp
+- **Formulário de contato** que cria lead no CRM + abre chat WhatsApp
+- **Portal do Cliente** para consulta de atendimentos
+- **Design responsivo** com tema escuro e animações
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/seu-usuario/garagem-do-meec.git
-   cd garagem-do-meec
-   ```
+---
 
-2. Instale as dependências:
-   ```bash
-   npm install
-   ```
+## 🛠️ Stack
 
-3. Configure as variáveis de ambiente:
-   ```bash
-   cp .env.example .env
-   # Edite .env com suas configurações
-   ```
+| Tecnologia | Uso |
+|:-----------|:----|
+| **HTML5 + Tailwind CSS** | Frontend (via CDN) |
+| **JavaScript Vanilla** | Interatividade |
+| **Netlify** | Hospedagem estática |
+| **CRM (Railway/PostgreSQL)** | API de dados (estoque, leads) |
 
-4. Execute a instalação inicial:
-   ```bash
-   node install.js
-   ```
+---
 
-5. Inicie o servidor:
-   ```bash
-   npm start
-   ```
+## 📁 Estrutura do Projeto
 
-6. Acesse:
-   - Site público: http://localhost:3000
-   - Painel admin: http://localhost:3000/admin
-   - Login padrão: admin / admin123
-
-## 📦 Variáveis de Ambiente
-
-Variável | Descrição | Padrão/Obrigatório
----------|-----------|-------------------
-PORT | Porta do servidor | 3000
-NODE_ENV | Ambiente (development/production) | development
-SESSION_SECRET | Segredo para sessões | Necessário alterar em produção
-ADMIN_USERNAME | Usuário admin | admin
-ADMIN_PASSWORD | Senha admin | Necessário alterar
-ADMIN_NAME | Nome do admin | Pablo Jhonatan
-REGISTER_SECRET | Chave para registro de usuários | meec-admin-2026
-WHATSAPP_ENABLED | Ativar WhatsApp Web | true
-WHATSAPP_OWNER_NUMBER | Número do proprietário | Obrigatório para notificações
-GOOGLE_CLIENT_ID | ID do cliente Google OAuth | Opcional
-GOOGLE_CLIENT_SECRET | Segredo do cliente Google OAuth | Opcional
-BASE_URL | URL base do aplicativo | http://localhost:3000
-SUPABASE_URL | URL do Supabase (opcional) | Opcional
-SUPABASE_ANON_KEY | Key anônima do Supabase (opcional) | Opcional
-
-## 🚀 Deploy
-
-### Railway
-1. Faça fork do repositório
-2. Conecte seu repositório no Railway
-3. Adicionar as variáveis de ambiente necessárias
-4. O Railway detectará automaticamente o Node.js e iniciará
-
-### Docker
-```bash
-docker build -t garagem-do-meec .
-docker run -p 3000:3000 --env-file .env garagem-do-meec
+```
+/
+├── index.html            ← Site completo (única página)
+├── netlify.toml          ← Configuração do Netlify
+├── _redirects            ← Regras de redirect SPA
+├── media/                ← Imagens, vídeos e GIFs dos produtos
+│   ├── banner-fundo.jpeg
+│   ├── logo oficial .png
+│   ├── Create_an_ultra_premium_cinema (1).mp4
+│   ├── motor-sujo.png / motor-limpo.png
+│   ├── depois .jpeg / coifa mocineica anes.jpeg
+│   └── produtos/         ← Pasta para GIFs otimizados dos produtos
+├── manifest.json         ← PWA manifest
+└── sw.js                 ← Service Worker
 ```
 
-## 📝 Licença
+---
 
-Este projeto está licenciado sob a licença ISC - veja o arquivo [LICENSE](LICENSE) para detalhes.
+## 🔌 Integração com o CRM
 
-## 👥 Contribuindo
+O site consome **APIs públicas** do CRM (não precisa de autenticação):
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+| Endpoint | Função |
+|:---------|:-------|
+| `GET /api/public/meec-stock` | Lista produtos do estoque MEEC |
+| `GET /api/public/meec-stock/meta/categorias` | Categorias disponíveis |
+| `GET /api/public/meec-stock/meta/summary` | Resumo do estoque |
+| `POST /api/public/leads` | Cria novo lead (formulário de contato) |
 
-## 📞 Suporte
+**CRM URL:** `https://crm-garagem-production.up.railway.app`
 
-Para questões e suporte, por favor abra uma issue neste repositório.
+---
+
+## 📸 Adicionar GIFs de Produtos
+
+1. Gere GIFs otimizados (máx 500 KB, 400×300px)
+2. Salve em `media/produtos/{id-do-produto}.gif`
+3. Faça deploy no Netlify
+
+> 💡 Use [ezgif.com](https://ezgif.com) ou similar para otimizar.
+
+---
+
+## 🚀 Deploy (Netlify)
+
+### Via Git (recomendado)
+
+1. Faça push do repositório para o GitHub
+2. Conecte no [Netlify](https://app.netlify.com) → "Import from Git"
+3. Selecione o repositório
+4. Configure:
+   - **Build command:** (vazio — site estático)
+   - **Publish directory:** `/`
+5. Clique em "Deploy"
+
+### Via CLI
+
+```bash
+npx netlify deploy --prod --dir=.
+```
+
+---
+
+## 📞 Contato
+
+- **WhatsApp:** [(61) 98125-7477](https://wa.me/5561981257477)
+- **Instagram:** [@meec_pablo](https://instagram.com/meec_pablo)
+- **Endereço:** R. 102, Jardim Ceu Azul — Valparaíso de Goiás · GO, 72871-102
