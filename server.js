@@ -12,16 +12,17 @@ const PORT = process.env.PORT || 3000;
 const tenant = app.get('tenant');
 
 async function start() {
-  // Wait for tenant cache to load before accepting requests
-  if (tenant && typeof tenant.init === 'function') {
-    await tenant.init();
-  }
-
+  // Start HTTP server first (healthcheck needs port open)
   const server = app.listen(PORT, () => {
     console.log(`🚀 Servidor rodando na porta ${PORT}`);
     console.log(`🌐 Acesse: http://localhost:${PORT}`);
     console.log(`🔧 Painel admin: http://localhost:${PORT}/admin`);
     console.log(`📦 Banco: ${db.type === 'postgres' ? 'PostgreSQL' : 'SQLite'}`);
+
+    // Initialize tenant cache in background (non-blocking)
+    if (tenant && typeof tenant.init === 'function') {
+      tenant.init().catch(err => console.error('[Tenant] Init error:', err.message));
+    }
   });
 
   // ─── Graceful Shutdown ───────────────────────────────────────────
