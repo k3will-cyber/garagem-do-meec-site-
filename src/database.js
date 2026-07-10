@@ -85,38 +85,263 @@ function createSQLiteAdapter() {
 /**
  * PostgreSQL adapter wrapping pg
  */
-function createPostgresAdapter(connectionString) {
+/**
+ * PostgreSQL schema (adapted from SQLite install.js for PostgreSQL syntax)
+ */
+const PG_SCHEMA = `
+  CREATE TABLE IF NOT EXISTS tenants (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    subdomain TEXT UNIQUE,
+    logo TEXT,
+    whatsapp TEXT,
+    address TEXT,
+    settings TEXT DEFAULT '{}',
+    ativo INTEGER DEFAULT 1,
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    name TEXT NOT NULL,
+    email TEXT DEFAULT '',
+    role TEXT DEFAULT 'superadmin',
+    avatar TEXT,
+    google_id TEXT UNIQUE,
+    auth_provider TEXT DEFAULT 'local',
+    tenant_id INTEGER REFERENCES tenants(id),
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS leads (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    whatsapp TEXT NOT NULL,
+    email TEXT,
+    message TEXT,
+    status TEXT DEFAULT 'lead_qualificado',
+    valor REAL DEFAULT 0,
+    origem TEXT DEFAULT 'site',
+    notas TEXT,
+    data_proximo_contato TIMESTAMP,
+    ultimo_contato TIMESTAMP,
+    responsavel TEXT,
+    veiculo TEXT,
+    servico_interesse TEXT,
+    tenant_id INTEGER REFERENCES tenants(id),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS estoque (
+    id SERIAL PRIMARY KEY,
+    nome TEXT NOT NULL,
+    descricao TEXT,
+    preco REAL NOT NULL,
+    imagem TEXT,
+    categoria TEXT DEFAULT 'geral',
+    quantidade INTEGER DEFAULT 0,
+    ativo INTEGER DEFAULT 1,
+    tenant_id INTEGER REFERENCES tenants(id),
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS pedidos (
+    id SERIAL PRIMARY KEY,
+    cliente_nome TEXT,
+    cliente_whatsapp TEXT,
+    items TEXT NOT NULL,
+    total REAL NOT NULL,
+    forma_pagamento TEXT DEFAULT 'PIX',
+    status TEXT DEFAULT 'novo',
+    tenant_id INTEGER REFERENCES tenants(id),
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS vagas (
+    id SERIAL PRIMARY KEY,
+    data DATE UNIQUE NOT NULL,
+    vagas INTEGER DEFAULT 3
+  );
+
+  CREATE TABLE IF NOT EXISTS ordens_servico (
+    id SERIAL PRIMARY KEY,
+    tenant_id INTEGER REFERENCES tenants(id),
+    lead_id INTEGER,
+    numero_os TEXT UNIQUE,
+    cliente_nome TEXT NOT NULL,
+    cliente_whatsapp TEXT,
+    cliente_email TEXT,
+    veiculo TEXT NOT NULL,
+    placa TEXT,
+    km INTEGER,
+    servico_desc TEXT,
+    status TEXT DEFAULT 'aberta',
+    prioridade TEXT DEFAULT 'normal',
+    data_entrada TIMESTAMP DEFAULT NOW(),
+    data_prevista TIMESTAMP,
+    data_saida TIMESTAMP,
+    valor_mao_obra REAL DEFAULT 0,
+    valor_pecas REAL DEFAULT 0,
+    valor_total REAL DEFAULT 0,
+    desconto REAL DEFAULT 0,
+    forma_pagamento TEXT,
+    observacoes TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS os_itens (
+    id SERIAL PRIMARY KEY,
+    os_id INTEGER NOT NULL REFERENCES ordens_servico(id),
+    tipo TEXT NOT NULL DEFAULT 'servico',
+    descricao TEXT NOT NULL,
+    quantidade REAL DEFAULT 1,
+    valor_unitario REAL DEFAULT 0,
+    valor_total REAL DEFAULT 0,
+    estoque_id INTEGER,
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS financeiro (
+    id SERIAL PRIMARY KEY,
+    tenant_id INTEGER REFERENCES tenants(id),
+    os_id INTEGER,
+    tipo TEXT NOT NULL DEFAULT 'receita',
+    categoria TEXT NOT NULL DEFAULT 'servico',
+    descricao TEXT NOT NULL,
+    valor REAL NOT NULL DEFAULT 0,
+    forma_pagamento TEXT,
+    data_vencimento DATE,
+    data_pagamento DATE,
+    status TEXT DEFAULT 'pendente',
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS ofertas_prizes (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    type TEXT NOT NULL DEFAULT 'desconto_pct',
+    value REAL NOT NULL DEFAULT 0,
+    probability_weight INTEGER NOT NULL DEFAULT 1,
+    color TEXT NOT NULL DEFAULT '#0044CC',
+    image TEXT,
+    ativo INTEGER DEFAULT 1,
+    estoque_id INTEGER,
+    tenant_id INTEGER,
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS ofertas_spins (
+    id SERIAL PRIMARY KEY,
+    client_name TEXT NOT NULL,
+    client_whatsapp TEXT NOT NULL,
+    prize_id INTEGER,
+    prize_name TEXT NOT NULL,
+    prize_type TEXT NOT NULL,
+    prize_value REAL DEFAULT 0,
+    coupon_code TEXT UNIQUE NOT NULL,
+    usado INTEGER DEFAULT 0,
+    usado_em TIMESTAMP,
+    ip_address TEXT,
+    tenant_id INTEGER,
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
+  CREATE INDEX IF NOT EXISTS idx_leads_created ON leads(created_at);
+  CREATE INDEX IF NOT EXISTS idx_os_tenant ON ordens_servico(tenant_id);
+  CREATE INDEX IF NOT EXISTS idx_financeiro_tenant ON financeiro(tenant_id);
+`;
+
+/**
+ * Try to connect with optional SSL, fallback to without SSL
+ */
+async function createPool(connectionString) {
   const { Pool } = require('pg');
 
-  const pool = new Pool({
+  // Try with SSL first (Railway PostgreSQL plugin / production PG)
+  for (const ssl of [{ rejectUnauthorized: false }, false]) {
+    try {
+      const pool = new Pool({
+        connectionString,
+        ssl,
+        max: 5,
+        idleTimeoutMillis: 10000,
+        connectionTimeoutMillis: 5000
+      });
+      // Test connection
+      const client = await pool.connect();
+      client.release();
+      console.log(`[DB] PostgreSQL conectado (ssl: ${ssl !== false})`);
+      return pool;
+    } catch (err) {
+      console.log(`[DB] SSL=${ssl !== false} falhou: ${err.message}`);
+    }
+  }
+
+  // Last attempt: no SSL, simple pool
+  console.log('[DB] PostgreSQL conectando sem SSL...');
+  return new Pool({
     connectionString,
-    ssl: { rejectUnauthorized: false },
+    ssl: false,
     max: 10,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000
   });
+}
 
-  pool.on('error', (err) => {
-    console.error('[DB] Erro inesperado no pool PostgreSQL:', err.message);
-  });
+function createPostgresAdapter(connectionString) {
+  let pool;
+  let schemaInitialized = false;
 
-  return {
+  const adapter = {
     type: 'postgres',
 
+    async ensurePool() {
+      if (!pool) {
+        pool = await createPool(connectionString);
+        pool.on('error', (err) => {
+          console.error('[DB] Erro inesperado no pool PostgreSQL:', err.message);
+        });
+      }
+      return pool;
+    },
+
+    async initSchema() {
+      if (schemaInitialized) return;
+      const p = await adapter.ensurePool();
+      try {
+        console.log('[DB] Inicializando schema PostgreSQL...');
+        await p.query(PG_SCHEMA);
+        console.log('[DB] Schema PostgreSQL inicializado');
+        schemaInitialized = true;
+      } catch (err) {
+        console.error('[DB] Erro ao inicializar schema:', err.message);
+      }
+    },
+
     async all(sql, params = []) {
-      const { rows } = await pool.query(convertSql(sql), params);
+      const p = await adapter.ensurePool();
+      const { rows } = await p.query(convertSql(sql), params);
       return rows;
     },
 
     async get(sql, params = []) {
-      const { rows } = await pool.query(convertSql(sql), params);
+      const p = await adapter.ensurePool();
+      const { rows } = await p.query(convertSql(sql), params);
       return rows[0] || null;
     },
 
     async run(sql, params = []) {
+      const p = await adapter.ensurePool();
       const isInsert = /^\s*INSERT\s/i.test(sql.trim());
       const query = isInsert ? convertSql(sql) + ' RETURNING id' : convertSql(sql);
-      const result = await pool.query(query, params);
+      const result = await p.query(query, params);
       return {
         changes: result.rowCount,
         lastInsertRowid: isInsert && result.rows[0] ? result.rows[0].id : undefined
@@ -124,20 +349,19 @@ function createPostgresAdapter(connectionString) {
     },
 
     async exec(sql) {
-      const statements = sql
-        .split(';')
-        .map(s => s.trim())
-        .filter(s => s.length > 0);
-
+      const p = await adapter.ensurePool();
+      const statements = sql.split(';').map(s => s.trim()).filter(s => s.length > 0);
       for (const stmt of statements) {
-        await pool.query(stmt);
+        await p.query(stmt);
       }
     },
 
     async close() {
-      await pool.end();
+      if (pool) await pool.end();
     }
   };
+
+  return adapter;
 }
 
 /**

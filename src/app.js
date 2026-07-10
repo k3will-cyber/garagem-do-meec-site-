@@ -108,28 +108,15 @@ function createApp(db) {
   const leadsControllerInstance = new leadsController(leadsService);
   const osControllerInstance = new osController(osService);
 
-  // ─── Health Check ───────────────────────────────────────────────
-  app.get('/health', async (req, res) => {
-    try {
-      // Test database connection
-      let dbStatus = 'disconnected';
-      try {
-        await db.get('SELECT 1 as ping');
-        dbStatus = 'connected';
-      } catch (e) {
-        dbStatus = 'error: ' + e.message;
-      }
-
-      res.json({
-        status: 'ok',
-        time: new Date().toISOString(),
-        environment: NODE_ENV,
-        database: db.type,
-        db: dbStatus
-      });
-    } catch (error) {
-      res.status(500).json({ status: 'error', message: error.message });
-    }
+  // ─── Health Check (responds instantly — no DB query) ────────────
+  app.get('/health', (req, res) => {
+    res.json({
+      status: 'ok',
+      time: new Date().toISOString(),
+      environment: NODE_ENV,
+      database: db.type,
+      uptime: process.uptime()
+    });
   });
 
   app.get('/api/health', (req, res) => {

@@ -19,6 +19,11 @@ async function start() {
     console.log(`🔧 Painel admin: http://localhost:${PORT}/admin`);
     console.log(`📦 Banco: ${db.type === 'postgres' ? 'PostgreSQL' : 'SQLite'}`);
 
+    // Initialize database schema for PostgreSQL (non-blocking)
+    if (db.type === 'postgres' && typeof db.initSchema === 'function') {
+      db.initSchema().catch(err => console.error('[DB] Schema init error:', err.message));
+    }
+
     // Initialize tenant cache in background (non-blocking)
     if (tenant && typeof tenant.init === 'function') {
       tenant.init().catch(err => console.error('[Tenant] Init error:', err.message));
