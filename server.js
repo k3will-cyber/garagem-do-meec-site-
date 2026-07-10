@@ -19,15 +19,22 @@ async function start() {
     console.log(`🔧 Painel admin: http://localhost:${PORT}/admin`);
     console.log(`📦 Banco: ${db.type === 'postgres' ? 'PostgreSQL' : 'SQLite'}`);
 
-    // Initialize database schema for PostgreSQL (non-blocking)
+    // Initialize schema first, then tenant cache (chain to avoid race condition)
+    const initTasks = [];
+
     if (db.type === 'postgres' && typeof db.initSchema === 'function') {
-      db.initSchema().catch(err => console.error('[DB] Schema init error:', err.message));
+      initTasks.push(db.initSchema());
     }
 
-    // Initialize tenant cache in background (non-blocking)
-    if (tenant && typeof tenant.init === 'function') {
-      tenant.init().catch(err => console.error('[Tenant] Init error:', err.message));
-    }
+    // Ensure schema is ready before loading tenants
+    Promise.all(initTasks)
+      .then(() => {
+        if (tenant && typeof tenant.init === 'function') {
+          return tenant.init();
+        }
+      })
+      .then(() => console.log('[Startup] Database and tenant cache ready'))
+      .catch(err => console.error('[Startup] Init error:', err.message));
   });
 
   // ─── Graceful Shutdown ───────────────────────────────────────────
