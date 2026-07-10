@@ -1,4 +1,4 @@
-const CACHE_NAME = 'garagem-mec-v1';
+const CACHE_NAME = 'garagem-mec-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -31,33 +31,50 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - network first, fallback to cache
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests
   if (event.request.method !== 'GET') return;
 
-  // Skip external resources we can't cache (images from CDN, etc.)
   const url = new URL(event.request.url);
-  if (!url.origin.includes('garagem-do-mec') && !url.origin.includes(location.host)) {
-    // For external resources, just fetch normally
+  
+  // For CRM API calls, use network-only (no caching of dynamic data)
+  if (url.hostname.includes('railway.app') || url.hostname.includes('crm-garagem')) {
+    event.respondWith(fetch(event.request).catch(() => {
+      return new Response(JSON.stringify({ error: 'offline' }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }));
     return;
   }
 
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        // Cache successful responses
-        if (response.status === 200) {
+  // For static media assets on Netlify, prefer cache then network
+  if (url.pathname.startsWith('/media/')) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        return cached || fetch(event.request).then((response) => {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, clone);
           });
+          return response;
+        });
+      })
+    );
+    return;
+  }
+
+  // Default: network first, cache fallback
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        if (response.status === 200 && response.headers.get('Content-Type')?.includes('text/html')) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
         return response;
       })
       .catch(() => {
-        // Offline - serve from cache
         return caches.match(event.request).then((cached) => {
           if (cached) return cached;
-          // If it's a navigation request, serve index.html
           if (event.request.mode === 'navigate') {
             return caches.match('/index.html');
           }
