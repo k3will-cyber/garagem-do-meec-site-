@@ -33,7 +33,14 @@ async function start() {
           return tenant.init();
         }
       })
-      .then(() => console.log('[Startup] Database and tenant cache ready'))
+      .then(() => {
+        console.log('[Startup] Database and tenant cache ready');
+        // Auto-seed products if estoque is empty
+        return autoSeedEstoque(db);
+      })
+      .then(count => {
+        if (count > 0) console.log(`[Startup] ${count} produtos no estoque`);
+      })
       .catch(err => console.error('[Startup] Init error:', err.message));
   });
 
@@ -52,6 +59,29 @@ start().catch(err => {
   console.error('❌ Erro ao iniciar servidor:', err.message);
   process.exit(1);
 });
+
+/**
+ * Auto-seed products into the estoque table if it's empty
+ */
+async function autoSeedEstoque(db) {
+  try {
+    const result = await db.get('SELECT COUNT(*) as count FROM estoque');
+    if (result.count > 0) {
+      return result.count;
+    }
+
+    console.log('[Seed] Estoque vazio. Importando produtos padrão...');
+    // Run the seed script in-process (properly awaited)
+    const seedProdutos = require('./seed-produtos');
+    await seedProdutos();
+    const after = await db.get('SELECT COUNT(*) as count FROM estoque');
+    console.log(`[Seed] ${after.count} produtos importados!`);
+    return after.count;
+  } catch (err) {
+    console.error('[Seed] Auto-seed error:', err.message);
+    return 0;
+  }
+}
 
 // ─── Uncaught error handlers ─────────────────────────────────────
 process.on('unhandledRejection', (err) => {

@@ -153,7 +153,12 @@ async function main() {
   }
 }
 
-main().catch(err => {
-  console.error('[Seed] Erro:', err.message);
-  process.exit(1);
-});
+// Auto-executa quando chamado diretamente: node seed-produtos.js
+if (require.main === module) {
+  main().catch(err => {
+    console.error('[Seed] Erro:', err.message);
+    process.exit(1);
+  });
+}
+
+module.exports = main;
