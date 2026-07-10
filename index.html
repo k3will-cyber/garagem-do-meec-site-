@@ -9,10 +9,9 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230044CC'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-weight='900' font-size='16' font-family='Inter,sans-serif'%3EGM%3C/text%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='24' fill='%230044CC'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-weight='900' font-size='72' font-family='Inter,sans-serif'%3EGM%3C/text%3E%3C/svg%3E">
-  <link rel="preload" href="media/logo-animada.mp4" as="video" type="video/mp4">
+  <link rel="preload" href="media/Create_an_ultra_premium_cinema%20(1).mp4" as="video" type="video/mp4">
   <link rel="preload" href="media/banner-fundo.jpeg" as="image" type="image/jpeg">
-  <link rel="preload" href="media/logo.jpeg" as="image" type="image/jpeg">
-  <link rel="preload" href="media/mecanico-trabalhando.jpeg" as="image" type="image/jpeg">
+  <link rel="preload" href="media/logo%20oficial%20.png" as="image" type="image/png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -419,14 +418,8 @@
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           Seg–Sex 8h–18h
         </span>
-        <a href="#" onclick="openClientPortal(); return false;" class="tag bg-[#30D158]/10 text-[#30D158] border border-[#30D158]/20 font-semibold hover:bg-[#30D158]/20 transition-all no-underline" title="Consultar Atendimento">
-          📋 Consultar
-        </a>
-        <a href="/login" class="tag bg-[#F2F2F7]/10 text-[#F2F2F7] border border-[#F2F2F7]/20 font-semibold hover:bg-[#F2F2F7]/20 transition-all no-underline" title="Entrar na sua conta">
-          👤 Entrar
-        </a>
-        <a href="/admin" class="tag bg-[#0044CC]/10 text-[#0044CC] border border-[#0044CC]/20 font-semibold hover:bg-[#0044CC]/20 transition-all no-underline" title="Painel Admin">
-          🔒 Admin
+        <a href="https://wa.me/5561981257477" target="_blank" class="tag bg-[#30D158]/10 text-[#30D158] border border-[#30D158]/20 font-semibold hover:bg-[#30D158]/20 transition-all no-underline" title="Falar no WhatsApp">
+          💬 WhatsApp
         </a>
         <span class="tag bg-[#0044CC]/10 text-[#0044CC] border border-[#0044CC]/20 font-semibold" id="vagas-counter">
           🔥 <span id="vagas-num">3</span> vagas hoje
@@ -449,8 +442,8 @@
             loop
             playsinline
             preload="auto"
-            poster="media/logo.jpeg">
-            <source src="media/logo-animada.mp4" type="video/mp4">
+            poster="media/logo%20oficial%20.png">
+            <source src="media/Create_an_ultra_premium_cinema%20(1).mp4" type="video/mp4">
           </video>
           <button id="logo-sound-toggle" class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#0044CC] flex items-center justify-center cursor-pointer border-0 text-white text-[10px] opacity-40 hover:opacity-100 transition-opacity" title="Ativar som">
             🔊
@@ -470,6 +463,9 @@
         <a href="#estoque" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Estoque</a>
         <a href="#numeros" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Números</a>
         <a href="#processo" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Processo</a>
+        <a href="#" id="crm-link" target="_blank" class="text-sm font-medium text-[#8E8E93] hover:text-[#F5C800] transition-colors flex items-center gap-1">
+          🔑 Painel Administrativo
+        </a>
         <a href="#contato" class="btn-primary text-xs px-5 py-2.5">
           Agendar Diagnóstico
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -751,14 +747,14 @@
 
       <!-- Masonry-like gallery grid -->
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- Image 1 - Mecânico trabalhando -->
-        <div class="reveal group cursor-pointer" onclick="openLightbox('media/mecanico-trabalhando.jpeg')">
+        <!-- Image 1 - Banner da oficina -->
+        <div class="reveal group cursor-pointer" onclick="openLightbox('media/banner-fundo.jpeg')">
           <div class="media-placeholder aspect-[4/3] relative overflow-hidden">
-            <img src="media/mecanico-trabalhando.jpeg" alt="Mecânico trabalhando na Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" decoding="async" onload="this.classList.add('loaded')">
+            <img src="media/banner-fundo.jpeg" alt="Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" decoding="async" onload="this.classList.add('loaded')">
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08080A] to-transparent p-4">
               <div class="flex items-center gap-2">
-                <span class="tag bg-[#0044CC]/20 text-[#0044CC] border-0 text-[9px]">🔧 MECÂNICO</span>
-                <span class="font-mono text-[10px] text-[#8E8E93]">Serviço em andamento</span>
+                <span class="tag bg-[#0044CC]/20 text-[#0044CC] border-0 text-[9px]">🏪 OFICINA</span>
+                <span class="font-mono text-[10px] text-[#8E8E93]">Garagem do MEEC</span>
               </div>
             </div>
           </div>
@@ -779,8 +775,8 @@
         <!-- Image 3 - Vídeo do logo animado -->
         <div class="reveal reveal-delay-2 md:row-span-2 group cursor-pointer">
           <div class="media-placeholder aspect-[4/6] h-full relative overflow-hidden rounded-3xl bg-[#08080A]">
-            <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="metadata" poster="media/logo.jpeg">
-              <source src="media/logo-animada.mp4" type="video/mp4">
+            <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="metadata" poster="media/logo%20oficial%20.png">
+              <source src="media/Create_an_ultra_premium_cinema%20(1).mp4" type="video/mp4">
             </video>
             <div class="absolute inset-0 bg-black/20"></div>
             <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center px-4">
@@ -807,12 +803,12 @@
           </div>
         </div>
 
-        <!-- Image 5 - Troca de óleo -->
-        <div class="reveal reveal-delay-2 group cursor-pointer" onclick="openLightbox('media/troca-oleo.jpg')">
+        <!-- Image 5 - Resultado de serviço -->
+        <div class="reveal reveal-delay-2 group cursor-pointer" onclick="openLightbox('media/depois%20.jpeg')">
           <div class="media-placeholder aspect-[4/3] relative overflow-hidden">
-            <img src="media/troca-oleo.jpg" alt="Troca de óleo Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" decoding="async" onload="this.classList.add('loaded')">
+            <img src="media/depois%20.jpeg" alt="Resultado de serviço Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" decoding="async" onload="this.classList.add('loaded')">
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08080A] to-transparent p-4">
-              <div class="font-mono text-[10px] text-[#8E8E93]">🛢️ Troca de óleo premium</div>
+              <div class="font-mono text-[10px] text-[#8E8E93]">✨ Resultado final do serviço</div>
             </div>
           </div>
         </div>
@@ -872,28 +868,20 @@
           </div>
         </div>
 
-        <!-- Before/After 2 -->
+        <!-- Before/After 2 - Coifa Mocineica -->
         <div class="dash-card p-1 reveal reveal-delay-1">
           <div class="ba-container" style="aspect-ratio: 4/3;">
-            <div class="media-placeholder w-full h-full absolute inset-0">
-              <div class="absolute inset-0 flex items-center justify-center">
-                <span class="font-mono text-[10px] text-[#636366] tracking-widest">ANTES: Freio desgastado</span>
-              </div>
-            </div>
+            <img src="media/depois%20.jpeg" alt="Coifa Mocineica - depois" class="w-full h-full object-cover absolute inset-0">
             <div class="ba-before" style="width: 50%;">
-              <div class="media-placeholder w-full h-full">
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <span class="font-mono text-[10px] text-[#636366] tracking-widest">DEPOIS: Freio novo</span>
-                </div>
-              </div>
+              <img src="media/coifa%20mocineica%20anes.jpeg" alt="Coifa Mocineica - antes" class="w-full h-full object-cover">
             </div>
             <div class="ba-handle" style="left: 50%;"></div>
             <div class="absolute bottom-2 left-2 z-10 tag bg-[#0044CC]/80 text-white border-0 text-[9px]">ANTES</div>
             <div class="absolute bottom-2 right-2 z-10 tag bg-[#30D158]/80 text-white border-0 text-[9px]">DEPOIS</div>
           </div>
           <div class="p-4 text-center">
-            <div class="font-sans font-bold text-sm">Troca de Pastilhas</div>
-            <div class="text-[11px] text-[#636366] font-mono">Ford Ka 2015 · Freio dianteiro</div>
+            <div class="font-sans font-bold text-sm">Recuperação de Coifa Mocineica</div>
+            <div class="text-[11px] text-[#636366] font-mono">Antes e depois · Serviço especializado</div>
           </div>
         </div>
       </div>
@@ -1025,77 +1013,11 @@
         </p>
       </div>
 
+      <!-- Products loaded dynamically from API -->
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4" id="estoque-grid">
-        <!-- Produto 1 -->
-        <div class="dash-card p-4 reveal flex flex-col" data-id="1" data-nome="Kit de Reparos Volkswagen" data-preco="89.90" data-img="media/kit-reparos-volks.jpeg">
-          <div class="media-placeholder aspect-[4/3] mb-4 overflow-hidden rounded-lg">
-            <img src="media/kit-reparos-volks.jpeg" alt="Kit de Reparos Volkswagen" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=flex items-center justify-center h-full><span class=text-[#636366] font-mono text-xs>📦 Sem foto</span></div>'">
-          </div>
-          <div class="flex-1 flex flex-col">
-            <span class="tag bg-[#FF9F0A]/10 text-[#FF9F0A] border-0 text-[9px] mb-2 self-start">KIT</span>
-            <h4 class="font-sans font-bold text-sm mb-1">Kit de Reparos Volkswagen</h4>
-            <p class="text-xs text-[#636366] mb-3 flex-1">Kit completo para revisão básica VW — filtros, velas e componentes.</p>
-            <div class="flex items-center justify-between mt-auto">
-              <span class="font-mono font-bold text-lg text-[#30D158]">R$ 89,90</span>
-              <button class="btn-add-cart w-9 h-9 rounded-lg bg-[#0044CC] hover:bg-[#003399] flex items-center justify-center border-0 cursor-pointer transition-all" onclick="addToCart(this)">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Produto 2 -->
-        <div class="dash-card p-4 reveal reveal-delay-1 flex flex-col" data-id="2" data-nome="Kit de Reparos Gol" data-preco="79.90" data-img="media/kit-reparos-gol.jpeg">
-          <div class="media-placeholder aspect-[4/3] mb-4 overflow-hidden rounded-lg">
-            <img src="media/kit-reparos-gol.jpeg" alt="Kit de Reparos Gol" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=flex items-center justify-center h-full><span class=text-[#636366] font-mono text-xs>📦 Sem foto</span></div>'">
-          </div>
-          <div class="flex-1 flex flex-col">
-            <span class="tag bg-[#FF9F0A]/10 text-[#FF9F0A] border-0 text-[9px] mb-2 self-start">KIT</span>
-            <h4 class="font-sans font-bold text-sm mb-1">Kit de Reparos Gol</h4>
-            <p class="text-xs text-[#636366] mb-3 flex-1">Kit específico para VW Gol — pastilhas de freio, óleo e filtros.</p>
-            <div class="flex items-center justify-between mt-auto">
-              <span class="font-mono font-bold text-lg text-[#30D158]">R$ 79,90</span>
-              <button class="btn-add-cart w-9 h-9 rounded-lg bg-[#0044CC] hover:bg-[#003399] flex items-center justify-center border-0 cursor-pointer transition-all" onclick="addToCart(this)">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Produto 3 -->
-        <div class="dash-card p-4 reveal reveal-delay-2 flex flex-col" data-id="3" data-nome="Kit de Reparos Geral" data-preco="69.90" data-img="media/kit-reparos.jpeg">
-          <div class="media-placeholder aspect-[4/3] mb-4 overflow-hidden rounded-lg">
-            <img src="media/kit-reparos.jpeg" alt="Kit de Reparos Geral" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=flex items-center justify-center h-full><span class=text-[#636366] font-mono text-xs>📦 Sem foto</span></div>'">
-          </div>
-          <div class="flex-1 flex flex-col">
-            <span class="tag bg-[#FF9F0A]/10 text-[#FF9F0A] border-0 text-[9px] mb-2 self-start">KIT</span>
-            <h4 class="font-sans font-bold text-sm mb-1">Kit de Reparos Geral</h4>
-            <p class="text-xs text-[#636366] mb-3 flex-1">Kit universal para manutenção preventiva — ideal para qualquer modelo.</p>
-            <div class="flex items-center justify-between mt-auto">
-              <span class="font-mono font-bold text-lg text-[#30D158]">R$ 69,90</span>
-              <button class="btn-add-cart w-9 h-9 rounded-lg bg-[#0044CC] hover:bg-[#003399] flex items-center justify-center border-0 cursor-pointer transition-all" onclick="addToCart(this)">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Produto 4 -->
-        <div class="dash-card p-4 reveal reveal-delay-3 flex flex-col" data-id="4" data-nome="Troca de Óleo Completa" data-preco="180.00" data-img="media/troca-oleo.jpg">
-          <div class="media-placeholder aspect-[4/3] mb-4 overflow-hidden rounded-lg">
-            <img src="media/troca-oleo.jpg" alt="Troca de Óleo Completa" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=flex items-center justify-center h-full><span class=text-[#636366] font-mono text-xs>📦 Sem foto</span></div>'">
-          </div>
-          <div class="flex-1 flex flex-col">
-            <span class="tag bg-[#0A84FF]/10 text-[#0A84FF] border-0 text-[9px] mb-2 self-start">SERVIÇO</span>
-            <h4 class="font-sans font-bold text-sm mb-1">Troca de Óleo Completa</h4>
-            <p class="text-xs text-[#636366] mb-3 flex-1">Óleo sintético + filtro premium + mão de obra especializada.</p>
-            <div class="flex items-center justify-between mt-auto">
-              <span class="font-mono font-bold text-lg text-[#30D158]">R$ 180,00</span>
-              <button class="btn-add-cart w-9 h-9 rounded-lg bg-[#0044CC] hover:bg-[#003399] flex items-center justify-center border-0 cursor-pointer transition-all" onclick="addToCart(this)">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-              </button>
-            </div>
-          </div>
+        <div class="text-center py-12 col-span-full" id="estoque-loading">
+          <div class="inline-block w-8 h-8 border-2 border-[#0044CC] border-t-transparent rounded-full animate-spin mb-3"></div>
+          <p class="text-sm text-[#636366]">Carregando produtos...</p>
         </div>
       </div>
 
@@ -1268,7 +1190,7 @@
   <footer class="border-t border-[#1C1C21] py-8">
     <div class="max-w-[1280px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
       <div class="flex items-center gap-3">
-        <img src="media/logo.jpeg" alt="Garagem do MEEC" class="w-8 h-8 rounded-lg object-cover">
+        <img src="media/logo%20oficial%20.png" alt="Garagem do MEEC" class="w-8 h-8 rounded-lg object-cover">
         <div>
           <p class="font-sans font-bold text-sm">GARAGEM <span class="text-[#0044CC]">DO MEEC</span></p>
           <p class="font-mono text-[10px] text-[#636366] tracking-widest uppercase">© 2026 · Dados reais, serviço real</p>
@@ -1296,6 +1218,7 @@
       <a href="#estoque" class="text-2xl font-bold text-[#F2F2F7]">Estoque</a>
       <a href="#numeros" class="text-2xl font-bold text-[#F2F2F7]">Números</a>
       <a href="#processo" class="text-2xl font-bold text-[#F2F2F7]">Processo</a>
+      <a href="#" id="mobile-crm-link" target="_blank" class="text-2xl font-bold text-[#F5C800]">🔑 Painel Administrativo</a>
       <a href="#contato" class="btn-primary text-lg mt-4">Agendar Diagnóstico</a>
     </div>
   </div>
@@ -1429,6 +1352,13 @@
   <!-- JAVASCRIPT                                                   -->
   <!-- ============================================================ -->
   <script>
+    // --- Helper: escape HTML to prevent XSS ---
+    function esc(str) {
+      const d = document.createElement('div');
+      d.textContent = str || '';
+      return d.innerHTML;
+    }
+
     // --- Mobile Menu ---
     (function() {
       const menuBtn = document.getElementById('mobile-menu-btn');
@@ -1441,6 +1371,99 @@
           link.addEventListener('click', () => menu.classList.add('hidden'));
         });
       }
+    })();
+
+    // --- Load Estoque from API ---
+    (function() {
+      const grid = document.getElementById('estoque-grid');
+      if (!grid) return;
+      
+      fetch('/api/estoque')
+        .then(res => res.json())
+        .then(products => {
+          const loading = document.getElementById('estoque-loading');
+          if (loading) loading.remove();
+          
+          if (!products || products.length === 0) {
+            grid.innerHTML = '<div class="text-center py-12 col-span-full"><p class="text-sm text-[#636366]">Nenhum produto disponível no momento</p></div>';
+            return;
+          }
+          
+          // Update section subtitle
+          const sectionP = document.querySelector('#estoque .max-w-3xl p');
+          if (sectionP) {
+            sectionP.innerHTML = 'Produtos disponíveis para retirada ou entrega. <strong class="text-[#F2F2F7]">Pagamento via PIX</strong> — <strong class="text-[#30D158]">' + products.length + ' itens</strong> em estoque.';
+          }
+          
+          const catLabels = {
+            oleo:'ÓLEO', filtro:'FILTRO', freio:'FREIO', ignicao:'IGNIÇÃO',
+            iluminacao:'ILUMINAÇÃO', correia:'CORREIA', bateria:'BATERIA',
+            suspensao:'SUSPENSÃO', arrefecimento:'ARREFECIMENTO',
+            diversos:'DIVERSOS', kit:'KIT', motor:'MOTOR',
+            cambio:'CÂMBIO', direcao:'DIREÇÃO', geral:'GERAL', servico:'SERVIÇO'
+          };
+          const catColors = {
+            oleo:'#FF9F0A', filtro:'#0A84FF', freio:'#30D158', ignicao:'#BF5AF2',
+            iluminacao:'#F5C800', correia:'#5AC8FA', bateria:'#30D158',
+            suspensao:'#FF9F0A', arrefecimento:'#0A84FF',
+            diversos:'#8E8E93', kit:'#FF9F0A', motor:'#FF453A',
+            cambio:'#BF5AF2', direcao:'#5AC8FA', geral:'#636366', servico:'#0A84FF'
+          };
+          
+          grid.innerHTML = products.map((p, i) => {
+            const cat = (p.categoria || 'geral').toLowerCase();
+            const label = catLabels[cat] || cat.toUpperCase();
+            const color = catColors[cat] || '#636366';
+            const delay = (i % 4) * 100;
+            return '<div class="dash-card p-4 reveal flex flex-col" style="transition-delay:' + delay + 'ms" data-id="' + p.id + '" data-nome="' + esc(p.nome) + '" data-preco="' + p.preco + '">' +
+              '<div class="media-placeholder aspect-[4/3] mb-4 overflow-hidden rounded-lg flex items-center justify-center">' +
+                '<div class="flex flex-col items-center justify-center gap-2 p-4 text-center">' +
+                  '<span style="font-size:2rem">📦</span>' +
+                  '<span class="text-[#636366] font-mono text-[10px]">' + esc(p.categoria || 'geral') + '</span>' +
+                '</div>' +
+              '</div>' +
+              '<div class="flex-1 flex flex-col">' +
+                '<span class="tag text-[9px] mb-2 self-start" style="background:' + color + '15;color:' + color + ';border:0">' + label + '</span>' +
+                '<h4 class="font-sans font-bold text-sm mb-1">' + esc(p.nome) + '</h4>' +
+                '<p class="text-xs text-[#636366] mb-3 flex-1">' + (p.descricao || '') + '</p>' +
+                '<div class="flex items-center justify-between mt-auto">' +
+                  '<span class="font-mono font-bold text-lg text-[#30D158]">R$ ' + p.preco.toFixed(2).replace('.', ',') + '</span>' +
+                  '<button class="btn-add-cart w-9 h-9 rounded-lg bg-[#0044CC] hover:bg-[#003399] flex items-center justify-center border-0 cursor-pointer transition-all" onclick="addToCart(this)">' +
+                    '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>' +
+                  '</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+          }).join('');
+          
+          // Trigger reveal animations
+          setTimeout(() => {
+            grid.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+          }, 100);
+        })
+        .catch(err => {
+          console.error('Erro ao carregar estoque:', err);
+          const loading = document.getElementById('estoque-loading');
+          if (loading) {
+            loading.innerHTML = '<div class="text-center py-8"><p class="text-sm text-[#FF453A]">Erro ao carregar produtos 😕</p><p class="text-xs text-[#636366] mt-1">Tente novamente mais tarde</p></div>';
+          }
+        });
+    })();
+
+    // --- Fetch CRM Config ---
+    (function() {
+      fetch('/api/config')
+        .then(res => res.json())
+        .then(data => {
+          if (data.crmUrl) {
+            const baseUrl = data.crmUrl.endsWith('/') ? data.crmUrl.slice(0, -1) : data.crmUrl;
+            const crmLink = document.getElementById('crm-link');
+            const mobileCrmLink = document.getElementById('mobile-crm-link');
+            if (crmLink) crmLink.href = baseUrl + '/login';
+            if (mobileCrmLink) mobileCrmLink.href = baseUrl + '/login';
+          }
+        })
+        .catch(err => console.error('Error fetching CRM config:', err));
     })();
 
     // --- Scroll Reveal ---
