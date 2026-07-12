@@ -860,6 +860,9 @@
         <a href="#estoque" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Estoque</a>
         <a href="#numeros" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Números</a>
         <a href="#processo" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Processo</a>
+        <a href="#" id="crm-link" target="_blank" class="text-sm font-medium text-[#8E8E93] hover:text-[#F5C800] transition-colors flex items-center gap-1">
+          🔑 Painel Administrativo
+        </a>
         <a href="#estoque" class="text-sm font-medium text-[#8E8E93] hover:text-[#30D158] transition-colors flex items-center gap-1">
           🛒 Estoque
         </a>
@@ -1681,6 +1684,7 @@
       <a href="#estoque" class="text-2xl font-bold text-[#F2F2F7]">Estoque</a>
       <a href="#numeros" class="text-2xl font-bold text-[#F2F2F7]">Números</a>
       <a href="#processo" class="text-2xl font-bold text-[#F2F2F7]">Processo</a>
+      <a href="#" id="mobile-crm-link" target="_blank" class="text-2xl font-bold text-[#F5C800]">🔑 Painel Administrativo</a>
       <a href="#estoque" class="text-2xl font-bold text-[#30D158]">🛒 Estoque</a>
       <a href="#contato" class="btn-primary text-lg mt-4">Agendar Diagnóstico</a>
       
@@ -2050,7 +2054,14 @@
       }
     });
 
-
+    // --- CRM Links (hardcoded — site is static on Netlify) ---
+    (function() {
+      const CRM_URL = 'https://crm-garagem-production.up.railway.app';
+      const crmLink = document.getElementById('crm-link');
+      const mobileCrmLink = document.getElementById('mobile-crm-link');
+      if (crmLink) crmLink.href = CRM_URL + '/login';
+      if (mobileCrmLink) mobileCrmLink.href = CRM_URL + '/login';
+    })();
 
     // --- Scroll Reveal ---
     (function() {
