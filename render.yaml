@@ -17,7 +17,7 @@ services:
       - key: SESSION_SECRET
         generateValue: true
       - key: CORS_ORIGIN
-        value: https://garagem-do-meec.netlify.app
+        value: https://garagemdomeec.com.br,https://garagem-do-meec.netlify.app
       - key: BASE_URL
         fromService:
           type: web

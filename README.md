@@ -10,9 +10,42 @@ Site institucional da **Garagem do MEEC**, oficina mecânica em Valparaíso de G
 
 | O quê | URL |
 |:------|:----|
-| **Site Público** | `https://garagem-do-meec.netlify.app` |
+| **Site Público** | [`https://garagemdomeec.com.br`](https://garagemdomeec.com.br) |
 | **Painel Administrativo (CRM)** | [`https://crm-garagem-production.up.railway.app/login`](https://crm-garagem-production.up.railway.app/login) |
 | **Loja MEEC** | [`https://crm-garagem-production.up.railway.app/meec-stock`](https://crm-garagem-production.up.railway.app/meec-stock) |
+
+---
+
+## 🌐 DNS — Domínio Próprio (Locaweb → Netlify)
+
+O domínio `garagemdomeec.com.br` está registrado na **Locaweb**. Para apontar para o Netlify:
+
+### Opção 1: Usar DNS da Locaweb (recomendado)
+
+No painel da Locaweb, configure estes registros DNS:
+
+| Tipo | Nome | Valor |
+|:----|:----|:------|
+| **CNAME** | `www` | `garagem-do-meec.netlify.app` |
+| **CNAME** | `@` (apex) | `garagem-do-meec.netlify.app` |
+
+> ⚠️ Se a Locaweb não suportar CNAME para domínio apex (`@`), use um **ALIAS** ou **ANAME**. Caso contrário, use a Opção 2.
+
+### Opção 2: Usar DNS do Netlify (trocar nameservers)
+
+No painel da Locaweb, altere os nameservers para:
+
+```
+dns1.p01.nsone.net
+dns2.p01.nsone.net
+dns3.p01.nsone.net
+dns4.p01.nsone.net
+```
+
+Depois, no **Netlify Dashboard**:
+1. Vá em **Site Settings → Domain Management → Add custom domain**
+2. Digite `garagemdomeec.com.br` e confirme
+3. Netlify vai gerenciar o DNS automaticamente
 
 ---
 
