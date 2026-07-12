@@ -14,8 +14,8 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://crm-garagem-production.up.railway.app">
-  <link rel="dns-prefetch" href="https://crm-garagem-production.up.railway.app">
+  <link rel="preconnect" href="https://crm-garagem.onrender.com">
+  <link rel="dns-prefetch" href="https://crm-garagem.onrender.com">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" as="style">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null">
 
@@ -1852,7 +1852,7 @@
         return ext === 'mp4' || ext === 'webm';
       }
       
-      fetch('https://crm-garagem-production.up.railway.app/api/public/meec-stock')
+      fetch('https://crm-garagem.onrender.com/api/public/meec-stock')
         .then(res => res.json())
         .then(products => {
           const loading = document.getElementById('estoque-loading');
@@ -2052,7 +2052,7 @@
 
     // --- CRM Links (hardcoded — site is static on Netlify) ---
     (function() {
-      const CRM_URL = 'https://crm-garagem-production.up.railway.app';
+      const CRM_URL = 'https://crm-garagem.onrender.com';
       const crmLink = document.getElementById('crm-link');
       const mobileCrmLink = document.getElementById('mobile-crm-link');
       if (crmLink) crmLink.href = CRM_URL + '/login';
@@ -2219,7 +2219,7 @@
       const successDiv = document.getElementById('form-success');
       const errorDiv = document.getElementById('form-error');
 
-      const CRM_LEADS_URL = 'https://crm-garagem-production.up.railway.app/api/public/leads';
+      const CRM_LEADS_URL = 'https://crm-garagem.onrender.com/api/public/leads';
       const WHATSAPP_NUMBER = '5561981257477';
 
       form.addEventListener('submit', async (e) => {
@@ -2364,7 +2364,7 @@
       notFoundDiv.classList.add('hidden');
 
       try {
-        const res = await fetch(`https://crm-garagem-production.up.railway.app/api/public/leads/consulta/${encodeURIComponent(whatsapp)}`);
+        const res = await fetch(`https://crm-garagem.onrender.com/api/public/leads/consulta/${encodeURIComponent(whatsapp)}`);
         const data = await res.json();
 
         loadingDiv.classList.add('hidden');
