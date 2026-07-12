@@ -49,11 +49,11 @@ Site institucional da **Garagem do MEEC**, oficina mecânica em Valparaíso de G
 ├── _redirects            ← Regras de redirect SPA
 ├── media/                ← Imagens, vídeos e GIFs dos produtos
 │   ├── banner-fundo.jpeg
-│   ├── logo oficial .png
-│   ├── Create_an_ultra_premium_cinema (1).mp4
+│   ├── logo-oficial.png
+│   ├── logo-animado.mp4
 │   ├── motor-sujo.png / motor-limpo.png
-│   ├── depois .jpeg / coifa mocineica anes.jpeg
-│   └── produtos/         ← Pasta para GIFs otimizados dos produtos
+│   ├── depois.jpeg / coifa-mocineica-anes.jpeg
+│   └── produtos/         ← Pasta para GIFs/imagens dos produtos
 ├── manifest.json         ← PWA manifest
 └── sw.js                 ← Service Worker
 ```
