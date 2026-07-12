@@ -85,23 +85,78 @@ O site consome **APIs públicas** do CRM (não precisa de autenticação):
 
 ---
 
-## 🚀 Deploy (Netlify)
+## 🚀 Deploy
 
-### Via Git (recomendado)
+### Arquitetura
 
-1. Faça push do repositório para o GitHub
-2. Conecte no [Netlify](https://app.netlify.com) → "Import from Git"
-3. Selecione o repositório
-4. Configure:
+```
+🌐 Netlify (Site Estático)          🖥️ Render (Backend/API)
+   ┌─────────────────┐                 ┌──────────────────┐
+   │  index.html      │ ── fetch() ──▶ │  Express.js API   │
+   │  media/          │                 │  /api/public/*    │
+   │  sw.js           │ ◀── JSON ───── │  PostgreSQL DB    │
+   └─────────────────┘                 └──────────────────┘
+```
+
+O **site público** (HTML estático) fica no **Netlify**.
+O **backend/API** (Express.js + PostgreSQL) fica no **Render**.
+
+---
+
+### 1️⃣ Backend → Render
+
+O `render.yaml` na raiz do projeto já configura tudo automaticamente.
+
+**Como fazer o deploy:**
+
+1. Faça push do repositório para o **GitHub**
+2. Acesse o [Render Dashboard](https://dashboard.render.com)
+3. Clique em **New +** → **Blueprint**
+4. Conecte seu GitHub e selecione este repositório
+5. Render vai detectar o `render.yaml` e provisionar:
+   - **Web Service:** `crm-garagem` (Express.js)
+   - **PostgreSQL:** `crm-garagem-db`
+6. As variáveis de ambiente são configuradas automaticamente pelo blueprint
+
+**Variáveis de ambiente** (definidas no `render.yaml`):
+
+| Variável | Origem | Descrição |
+|:---------|:-------|:----------|
+| `DATABASE_URL` | 📦 Render PostgreSQL | String de conexão (automática) |
+| `SESSION_SECRET` | 🔑 Gerado automaticamente | Chave de sessão |
+| `CORS_ORIGIN` | ✅ Fixo | URL do Netlify para CORS |
+| `BASE_URL` | 🔄 Render | URL do serviço (automática) |
+| `ADMIN_PASSWORD` | 🔑 Gerado automaticamente | Senha do admin |
+| `REGISTER_SECRET` | 🔑 Gerado automaticamente | Segredo para registro |
+| `NODE_ENV` | ✅ Fixo | `production` |
+| `WHATSAPP_ENABLED` | ✅ Fixo | `false` (desligado no free) |
+
+> ⚠️ **Atenção:** O plano **free** do Render PostgreSQL expira dados após 90 dias de inatividade. Para produção, faça upgrade para um plano pago.
+
+**Após o deploy**, as rotas públicas ficam disponíveis em:
+- `GET /api/public/meec-stock` — Lista produtos
+- `GET /api/public/meec-stock/meta/categorias` — Categorias
+- `GET /api/public/meec-stock/meta/summary` — Resumo
+- `POST /api/public/leads` — Criar lead
+- `GET /health` — Health check
+
+---
+
+### 2️⃣ Site Estático → Netlify
+
+**Como fazer o deploy:**
+
+1. No Render, copie a URL do seu Web Service (ex: `https://crm-garagem.onrender.com`)
+2. No `index.html`, atualize a URL da API se necessário (buscar por `crm-garagem-production.up.railway.app`)
+3. Faça push para o GitHub
+4. Acesse o [Netlify](https://app.netlify.com) → **Import from Git**
+5. Selecione o repositório
+6. Configure:
    - **Build command:** (vazio — site estático)
    - **Publish directory:** `/`
-5. Clique em "Deploy"
+7. Clique em **Deploy**
 
-### Via CLI
-
-```bash
-npx netlify deploy --prod --dir=.
-```
+> O Netlify já está pré-configurado com `netlify.toml` e `_redirects`.
 
 ---
 

@@ -39,7 +39,7 @@ function createApp(db) {
   // ─── Middleware Setup ────────────────────────────────────────────
   const corsOrigin = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',').map(s => s.trim())
-    : ['http://localhost:5000', 'http://localhost:5173', 'http://localhost:3000'];
+    : ['http://localhost:5000', 'http://localhost:5173', 'http://localhost:3000', 'https://garagem-do-meec.netlify.app'];
 
   app.use(cors({
     origin: corsOrigin,
@@ -185,6 +185,67 @@ function createApp(db) {
   app.put('/api/os/:id/itens/:itemId', (req, res) => osControllerInstance.updateOsItem(req, res));
   app.delete('/api/os/:id/itens/:itemId', (req, res) => osControllerInstance.deleteOsItem(req, res));
   app.get('/api/os/stats', (req, res) => osControllerInstance.getOsStats(req, res));
+
+  // ─── Public API Routes (no auth required) ───────────────────────
+  app.get('/api/public/meec-stock', async (req, res) => {
+    try {
+      const tenantId = req.tenant?.id || 1;
+      const products = await estoqueService.getActiveProducts(tenantId);
+      res.json(products);
+    } catch (error) {
+      console.error('Get public stock error:', error.message);
+      res.status(500).json({ error: 'Failed to fetch stock' });
+    }
+  });
+
+  app.get('/api/public/meec-stock/meta/categorias', async (req, res) => {
+    try {
+      const tenantId = req.tenant?.id || 1;
+      const products = await estoqueService.getActiveProducts(tenantId);
+      const categorias = [...new Set(products.map(p => p.categoria).filter(Boolean))];
+      res.json(categorias);
+    } catch (error) {
+      console.error('Get categories error:', error.message);
+      res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+  });
+
+  app.get('/api/public/meec-stock/meta/summary', async (req, res) => {
+    try {
+      const tenantId = req.tenant?.id || 1;
+      const products = await estoqueService.getActiveProducts(tenantId);
+      const total = products.length;
+      const porCategoria = products.reduce((acc, p) => {
+        const cat = p.categoria || 'geral';
+        acc[cat] = (acc[cat] || 0) + 1;
+        return acc;
+      }, {});
+      res.json({ total, porCategoria });
+    } catch (error) {
+      console.error('Get stock summary error:', error.message);
+      res.status(500).json({ error: 'Failed to fetch stock summary' });
+    }
+  });
+
+  app.post('/api/public/leads', async (req, res) => {
+    try {
+      const tenantId = req.tenant?.id || 1;
+      const leadData = {
+        name: req.body.name,
+        whatsapp: req.body.whatsapp,
+        email: req.body.email || '',
+        message: req.body.message || '',
+        origem: req.body.origem || 'site',
+        veiculo: req.body.veiculo || '',
+        servico_interesse: req.body.servico_interesse || ''
+      };
+      const createdLead = await leadsService.create(leadData, tenantId);
+      res.status(201).json({ success: true, data: createdLead });
+    } catch (error) {
+      console.error('Create public lead error:', error.message);
+      res.status(400).json({ error: error.message || 'Failed to create lead' });
+    }
+  });
 
   // ─── Admin routes ────────────────────────────────────────────────
   app.get('/api/admin/recent-logins', async (req, res) => {

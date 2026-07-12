@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: crm-garagem
+    env: node
+    region: us-east
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: crm-garagem-db
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://garagem-do-meec.netlify.app
+      - key: BASE_URL
+        fromService:
+          type: web
+          name: crm-garagem
+          property: host
+      - key: WHATSAPP_ENABLED
+        value: "false"
+      - key: WHATSAPP_OWNER_NUMBER
+        value: "5561981257477"
+      - key: ADMIN_USERNAME
+        value: "admin"
+      - key: ADMIN_PASSWORD
+        generateValue: true
+      - key: REGISTER_SECRET
+        generateValue: true
+
+databases:
+  - name: crm-garagem-db
+    plan: free
+    region: us-east
+    databaseName: garagem
+    user: garagem_user
+    ipAllowList: []
