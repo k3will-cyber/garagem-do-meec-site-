@@ -17,7 +17,7 @@ class OsService {
    * @param {number} tenantId - Tenant ID (for authorization)
    * @returns {Object|null} OS data with items or null if not found or unauthorized
    */
-  getById(id, tenantId) {
+  async getById(id, tenantId) {
     const os = await this.osRepository.findById(id);
     if (!os) return null;
 

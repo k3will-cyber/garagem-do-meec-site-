@@ -1,8 +1,8 @@
-# 🚗 Garagem do MEEC — Site Institucional
+# 🚗 Garagem do MEEC — Site + CRM
 
-Site institucional da **Garagem do MEEC**, oficina mecânica em Valparaíso de Goiás.
+Aplicativo full-stack da **Garagem do MEEC**, oficina mecânica em Valparaíso de Goiás.
 
-> **Status:** Site estático hospedado no **Netlify** com dados via API do CRM.
+> **Arquitetura:** Frontend React no **Netlify** + Backend/API no **Railway** + PostgreSQL.
 
 ---
 
@@ -10,9 +10,8 @@ Site institucional da **Garagem do MEEC**, oficina mecânica em Valparaíso de G
 
 | O quê | URL |
 |:------|:----|
-| **Site Público** | [`https://garagemdomeec.com.br`](https://garagemdomeec.com.br) |
-| **Painel Administrativo (CRM)** | [`https://crm-garagem-production.up.railway.app/login`](https://crm-garagem-production.up.railway.app/login) |
-| **Loja MEEC** | [`https://crm-garagem-production.up.railway.app/meec-stock`](https://crm-garagem-production.up.railway.app/meec-stock) |
+| **Site Público (React)** | [`https://garagemdomeec.com.br`](https://garagemdomeec.com.br) |
+| **Painel Admin (CRM)** | Configurar após deploy no Railway |
 
 ---
 
@@ -123,71 +122,66 @@ O site consome **APIs públicas** do CRM (não precisa de autenticação):
 ### Arquitetura
 
 ```
-🌐 Netlify (Site Estático)          🖥️ Render (Backend/API)
-   ┌─────────────────┐                 ┌──────────────────┐
-   │  index.html      │ ── fetch() ──▶ │  Express.js API   │
-   │  media/          │                 │  /api/public/*    │
-   │  sw.js           │ ◀── JSON ───── │  PostgreSQL DB    │
-   └─────────────────┘                 └──────────────────┘
+🌐 Netlify (Frontend React)          🖥️ Railway (Backend/API)
+   ┌─────────────────────┐              ┌──────────────────┐
+   │  client/ (React)    │── fetch()──▶│  server.js        │
+   │  /api → Railway     │              │  /api/*           │
+   │  media/             │◀── JSON ────│  PostgreSQL DB    │
+   └─────────────────────┘              └──────────────────┘
 ```
 
-O **site público** (HTML estático) fica no **Netlify**.
-O **backend/API** (Express.js + PostgreSQL) fica no **Render**.
+O **frontend React** fica no **Netlify**.
+O **backend/API** (Express.js + PostgreSQL) fica no **Railway**.
 
 ---
 
-### 1️⃣ Backend → Render
+### 1️⃣ Backend → Railway
 
-O `render.yaml` na raiz do projeto já configura tudo automaticamente.
+O `railway.json` na raiz do projeto configura tudo automaticamente.
 
 **Como fazer o deploy:**
 
 1. Faça push do repositório para o **GitHub**
-2. Acesse o [Render Dashboard](https://dashboard.render.com)
-3. Clique em **New +** → **Blueprint**
-4. Conecte seu GitHub e selecione este repositório
-5. Render vai detectar o `render.yaml` e provisionar:
-   - **Web Service:** `crm-garagem` (Express.js)
-   - **PostgreSQL:** `crm-garagem-db`
-6. As variáveis de ambiente são configuradas automaticamente pelo blueprint
+2. Acesse o [Railway Dashboard](https://railway.app/dashboard)
+3. Clique em **New Project** → **Deploy from GitHub repo**
+4. Selecione o repositório `k3will-cyber/garagem-do-meec-site-`
+5. Railway vai detectar o `railway.json` e configurar:
+   - **Builder:** Nixpacks
+   - **Start:** `node server.js`
+6. Adicione um banco PostgreSQL: **+ New** → **Database** → **PostgreSQL**
+7. Conecte as variáveis de ambiente:
+   - Railway automaticamente injeta `DATABASE_URL` do PostgreSQL
+   - Configure as variáveis manuais:
 
-**Variáveis de ambiente** (definidas no `render.yaml`):
+| Variável | Valor |
+|:---------|:------|
+| `NODE_ENV` | `production` |
+| `CORS_ORIGIN` | `https://garagem-do-meec.netlify.app,https://garagemdomeec.com.br` |
+| `WHATSAPP_ENABLED` | `false` |
+| `WHATSAPP_OWNER_NUMBER` | `5561981257477` |
+| `ADMIN_USERNAME` | `admin` |
+| `ADMIN_PASSWORD` | (escolha uma senha forte) |
+| `REGISTER_SECRET` | (escolha um segredo) |
+| `SESSION_SECRET` | (escolha uma chave aleatória) |
 
-| Variável | Origem | Descrição |
-|:---------|:-------|:----------|
-| `DATABASE_URL` | 📦 Render PostgreSQL | String de conexão (automática) |
-| `SESSION_SECRET` | 🔑 Gerado automaticamente | Chave de sessão |
-| `CORS_ORIGIN` | ✅ Fixo | URL do Netlify para CORS |
-| `BASE_URL` | 🔄 Render | URL do serviço (automática) |
-| `ADMIN_PASSWORD` | 🔑 Gerado automaticamente | Senha do admin |
-| `REGISTER_SECRET` | 🔑 Gerado automaticamente | Segredo para registro |
-| `NODE_ENV` | ✅ Fixo | `production` |
-| `WHATSAPP_ENABLED` | ✅ Fixo | `false` (desligado no free) |
-
-> ⚠️ **Atenção:** O plano **free** do Render PostgreSQL expira dados após 90 dias de inatividade. Para produção, faça upgrade para um plano pago.
-
-**Após o deploy**, as rotas públicas ficam disponíveis em:
-- `GET /api/public/meec-stock` — Lista produtos
-- `GET /api/public/meec-stock/meta/categorias` — Categorias
-- `GET /api/public/meec-stock/meta/summary` — Resumo
-- `POST /api/public/leads` — Criar lead
-- `GET /health` — Health check
+8. Copie a URL gerada do Railway (ex: `https://crm-garagem-production.up.railway.app`)
 
 ---
 
-### 2️⃣ Site Estático → Netlify
+### 2️⃣ Frontend → Netlify
+
+O `netlify.toml` já está configurado para o React.
 
 **Como fazer o deploy:**
 
-1. No Render, copie a URL do seu Web Service (ex: `https://crm-garagem.onrender.com`)
-2. No `index.html`, atualize a URL da API se necessário (buscar por `crm-garagem-production.up.railway.app`)
-3. Faça push para o GitHub
-4. Acesse o [Netlify](https://app.netlify.com) → **Import from Git**
-5. Selecione o repositório
-6. Configure:
-   - **Build command:** (vazio — site estático)
-   - **Publish directory:** `/`
-7. Clique em **Deploy**
+1. No Railway, copie a URL do backend (ex: `https://crm-garagem.up.railway.app`)
+2. Configure a variável no Netlify:
+   - **Netlify Dashboard → Site settings → Environment variables**
+   - Adicione: `VITE_API_URL = https://crm-garagem.up.railway.app`
+3. O Netlify vai:
+   - Rodar `cd client && npm install && npm run build`
+   - Publicar a pasta `client/dist`
+4. O frontend React vai consumir a API do Railway via `/api`
 
 > O Netlify já está pré-configurado com `netlify.toml` e `_redirects`.
 

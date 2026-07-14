@@ -3,7 +3,7 @@
 
 [build]
   publish = "client/dist"
-  command = "cd client && mkdir -p public/media && npm install && npm run build"
+  command = "cd client && npm install && npm run build"
 
 [dev]
   framework = "#static"
