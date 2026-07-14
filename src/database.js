@@ -58,6 +58,13 @@ function createSQLiteAdapter() {
   try {
     db.exec(SQLITE_SCHEMA);
     db.exec(SQLITE_SEED);
+    // Ensure default tenant exists (belt-and-suspenders)
+    const existing = db.prepare('SELECT id FROM tenants WHERE id = 1').get();
+    if (!existing) {
+      db.exec("INSERT INTO tenants (id,name,slug,subdomain,whatsapp,address,ativo) VALUES (1,'Garagem do MEEC','garagem-meec','garagem','(61) 98125-7477','Valparaíso de Goiás, GO',1)");
+      db.exec("INSERT INTO users (id,username,password,name,email,role,tenant_id) VALUES (1,'admin','$2a$10$8K1p/a0dR1xqM8K3hQv1aOQJQZZlLBhVNM6YRi6v9UQlJkHnFmKGe','Pablo Jhonatan','pablo@garagemmeec.com.br','superadmin',1)");
+      console.log('[DB] Tenant padrão criado (SQLite)');
+    }
     console.log('[DB] Schema SQLite inicializado com sucesso');
   } catch (err) {
     console.error('[DB] Erro ao inicializar schema SQLite:', err.message);
@@ -514,6 +521,13 @@ function createPostgresAdapter(connectionString) {
       try {
         console.log('[DB] Inicializando schema PostgreSQL...');
         await p.query(PG_SCHEMA);
+        // Ensure default tenant exists
+        const { rows } = await p.query('SELECT id FROM tenants WHERE id = 1');
+        if (rows.length === 0) {
+          await p.query("INSERT INTO tenants (id,name,slug,subdomain,whatsapp,address,ativo) VALUES (1,'Garagem do MEEC','garagem-meec','garagem','(61) 98125-7477','Valparaíso de Goiás, GO',1)");
+          await p.query("INSERT INTO users (id,username,password,name,email,role,tenant_id) VALUES (1,'admin','$2a$10$8K1p/a0dR1xqM8K3hQv1aOQJQZZlLBhVNM6YRi6v9UQlJkHnFmKGe','Pablo Jhonatan','pablo@garagemmeec.com.br','superadmin',1)");
+          console.log('[DB] Tenant padrão criado (PostgreSQL)');
+        }
         console.log('[DB] Schema PostgreSQL inicializado');
         schemaInitialized = true;
       } catch (err) {
