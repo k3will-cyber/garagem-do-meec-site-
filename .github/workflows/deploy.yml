@@ -45,7 +45,7 @@ jobs:
       - name: 📦 Instalar dependências
         run: |
           cd client
-          npm install
+          npm ci --legacy-peer-deps
 
       - name: 🔍 Verificar lint
         run: |
@@ -69,7 +69,7 @@ jobs:
       - name: 📦 Instalar dependências
         run: |
           cd client
-          npm install
+          npm ci --legacy-peer-deps
 
       - name: 🧪 Rodar testes
         run: |
@@ -96,7 +96,7 @@ jobs:
       - name: 📦 Instalar dependências
         run: |
           cd client
-          npm install
+          npm ci --legacy-peer-deps
 
       - name: 📁 Copiar mídia para o build
         run: |
