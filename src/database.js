@@ -54,10 +54,23 @@ function createSQLiteAdapter() {
   }
   db.pragma('foreign_keys = ON');
 
+  // Auto-create schema on startup
+  try {
+    db.exec(SQLITE_SCHEMA);
+    db.exec(SQLITE_SEED);
+    console.log('[DB] Schema SQLite inicializado com sucesso');
+  } catch (err) {
+    console.error('[DB] Erro ao inicializar schema SQLite:', err.message);
+  }
+
   console.log(`[DB] SQLite: ${isMemory ? ':memory:' : dbPath}`);
 
   return {
     type: 'sqlite',
+
+    async initSchema() {
+      // Schema already created above — no-op for consistency with PostgreSQL
+    },
 
     async all(sql, params = []) {
       return db.prepare(sql).all(...params);
@@ -256,6 +269,189 @@ const PG_SCHEMA = `
   CREATE INDEX IF NOT EXISTS idx_leads_created ON leads(created_at);
   CREATE INDEX IF NOT EXISTS idx_os_tenant ON ordens_servico(tenant_id);
   CREATE INDEX IF NOT EXISTS idx_financeiro_tenant ON financeiro(tenant_id);
+`;
+
+/**
+ * SQLite schema — same structure as PG_SCHEMA but SQLite syntax.
+ * Auto-created on first launch if tables don't exist.
+ */
+const SQLITE_SCHEMA = `
+  CREATE TABLE IF NOT EXISTS tenants (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    subdomain TEXT UNIQUE,
+    logo TEXT,
+    whatsapp TEXT,
+    address TEXT,
+    settings TEXT DEFAULT '{}',
+    ativo INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    name TEXT NOT NULL,
+    email TEXT DEFAULT '',
+    role TEXT DEFAULT 'superadmin',
+    avatar TEXT,
+    google_id TEXT UNIQUE,
+    auth_provider TEXT DEFAULT 'local',
+    tenant_id INTEGER REFERENCES tenants(id),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS leads (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    whatsapp TEXT NOT NULL,
+    email TEXT,
+    message TEXT,
+    status TEXT DEFAULT 'lead_qualificado',
+    valor REAL DEFAULT 0,
+    origem TEXT DEFAULT 'site',
+    notas TEXT,
+    data_proximo_contato DATETIME,
+    ultimo_contato DATETIME,
+    responsavel TEXT,
+    veiculo TEXT,
+    servico_interesse TEXT,
+    tenant_id INTEGER REFERENCES tenants(id),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS estoque (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    descricao TEXT,
+    preco REAL NOT NULL,
+    imagem TEXT,
+    categoria TEXT DEFAULT 'geral',
+    quantidade INTEGER DEFAULT 0,
+    ativo INTEGER DEFAULT 1,
+    tenant_id INTEGER REFERENCES tenants(id),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS pedidos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cliente_nome TEXT,
+    cliente_whatsapp TEXT,
+    items TEXT NOT NULL,
+    total REAL NOT NULL,
+    forma_pagamento TEXT DEFAULT 'PIX',
+    status TEXT DEFAULT 'novo',
+    tenant_id INTEGER REFERENCES tenants(id),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS vagas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    data DATE UNIQUE NOT NULL,
+    vagas INTEGER DEFAULT 3
+  );
+
+  CREATE TABLE IF NOT EXISTS ordens_servico (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tenant_id INTEGER REFERENCES tenants(id),
+    lead_id INTEGER,
+    numero_os TEXT UNIQUE,
+    cliente_nome TEXT NOT NULL,
+    cliente_whatsapp TEXT,
+    cliente_email TEXT,
+    veiculo TEXT NOT NULL,
+    placa TEXT,
+    km INTEGER,
+    servico_desc TEXT,
+    status TEXT DEFAULT 'aberta',
+    prioridade TEXT DEFAULT 'normal',
+    data_entrada DATETIME DEFAULT CURRENT_TIMESTAMP,
+    data_prevista DATETIME,
+    data_saida DATETIME,
+    valor_mao_obra REAL DEFAULT 0,
+    valor_pecas REAL DEFAULT 0,
+    valor_total REAL DEFAULT 0,
+    desconto REAL DEFAULT 0,
+    forma_pagamento TEXT,
+    observacoes TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS os_itens (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    os_id INTEGER NOT NULL REFERENCES ordens_servico(id),
+    tipo TEXT NOT NULL DEFAULT 'servico',
+    descricao TEXT NOT NULL,
+    quantidade REAL DEFAULT 1,
+    valor_unitario REAL DEFAULT 0,
+    valor_total REAL DEFAULT 0,
+    estoque_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS financeiro (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tenant_id INTEGER REFERENCES tenants(id),
+    os_id INTEGER,
+    tipo TEXT NOT NULL DEFAULT 'receita',
+    categoria TEXT NOT NULL DEFAULT 'servico',
+    descricao TEXT NOT NULL,
+    valor REAL NOT NULL DEFAULT 0,
+    forma_pagamento TEXT,
+    data_vencimento DATE,
+    data_pagamento DATE,
+    status TEXT DEFAULT 'pendente',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS ofertas_prizes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    type TEXT NOT NULL DEFAULT 'desconto_pct',
+    value REAL NOT NULL DEFAULT 0,
+    probability_weight INTEGER NOT NULL DEFAULT 1,
+    color TEXT NOT NULL DEFAULT '#0044CC',
+    image TEXT,
+    ativo INTEGER DEFAULT 1,
+    estoque_id INTEGER,
+    tenant_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS ofertas_spins (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_name TEXT NOT NULL,
+    client_whatsapp TEXT NOT NULL,
+    prize_id INTEGER,
+    prize_name TEXT NOT NULL,
+    prize_type TEXT NOT NULL,
+    prize_value REAL DEFAULT 0,
+    coupon_code TEXT UNIQUE NOT NULL,
+    usado INTEGER DEFAULT 0,
+    usado_em DATETIME,
+    ip_address TEXT,
+    tenant_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
+  CREATE INDEX IF NOT EXISTS idx_leads_created ON leads(created_at);
+  CREATE INDEX IF NOT EXISTS idx_os_tenant ON ordens_servico(tenant_id);
+  CREATE INDEX IF NOT EXISTS idx_financeiro_tenant ON financeiro(tenant_id);
+`;
+
+/** Seed data for SQLite — tenant + admin user */
+const SQLITE_SEED = `
+  INSERT OR IGNORE INTO tenants (id, name, slug, subdomain, whatsapp, address, ativo)
+  VALUES (1, 'Garagem do MEEC', 'garagem-meec', 'garagem', '(61) 98125-7477', 'Valparaíso de Goiás, GO', 1);
+
+  INSERT OR IGNORE INTO users (id, username, password, name, email, role, tenant_id)
+  VALUES (1, 'admin', '$2a$10$8K1p/a0dR1xqM8K3hQv1aOQJQZZlLBhVNM6YRi6v9UQlJkHnFmKGe', 'Pablo Jhonatan', 'pablo@garagemmeec.com.br', 'superadmin', 1);
 `;
 
 /**

@@ -22,7 +22,7 @@ async function start() {
     // Initialize schema first, then tenant cache (chain to avoid race condition)
     const initTasks = [];
 
-    if (db.type === 'postgres' && typeof db.initSchema === 'function') {
+    if (typeof db.initSchema === 'function') {
       initTasks.push(db.initSchema());
     }
 
