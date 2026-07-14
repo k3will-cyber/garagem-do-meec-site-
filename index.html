@@ -279,6 +279,146 @@
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .animate-spin { animation: spin 1s linear infinite; }
 
+    /* Roleta / Wheel Styles */
+    .roleta-overlay {
+      position: fixed; inset: 0; z-index: 95;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    .roleta-overlay.open { display: flex; }
+    .roleta-modal {
+      background: #0F0F12;
+      border: 1px solid #2A2A31;
+      border-radius: 20px;
+      padding: 32px 24px;
+      max-width: 560px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .roleta-modal .close-btn {
+      position: absolute; top: 16px; right: 16px;
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: #8E8E93; cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.2s;
+    }
+    .roleta-modal .close-btn:hover { background: rgba(255,255,255,0.15); }
+
+    .wheel-container {
+      position: relative;
+      width: 100%;
+      max-width: 340px;
+      margin: 0 auto;
+      aspect-ratio: 1;
+    }
+    .wheel-container canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      box-shadow: 0 0 40px rgba(0,68,204,0.15), 0 0 80px rgba(0,0,0,0.3);
+    }
+    .wheel-pointer {
+      position: absolute;
+      top: -16px; left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 16px solid transparent;
+      border-right: 16px solid transparent;
+      border-top: 28px solid #F5C800;
+      z-index: 2;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    }
+    .wheel-pointer::after {
+      content: '';
+      position: absolute;
+      top: -32px; left: 50%;
+      transform: translateX(-50%);
+      width: 14px; height: 14px;
+      background: #F5C800;
+      border-radius: 50%;
+    }
+    .wheel-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 48px; height: 48px;
+      background: #08080A;
+      border: 2px solid #2A2A31;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2;
+      font-weight: 900; font-size: 16px; color: #F5C800;
+    }
+
+    .roleta-register-form input {
+      width: 100%;
+      background: #08080A;
+      border: 1px solid #1C1C21;
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #F2F2F7;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .roleta-register-form input:focus {
+      border-color: rgba(0,68,204,0.5);
+      box-shadow: 0 0 0 1px rgba(0,68,204,0.2);
+    }
+    .roleta-register-form input::placeholder { color: #636366; }
+
+    .prize-display {
+      text-align: center;
+      padding: 16px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(0,68,204,0.1), rgba(245,200,0,0.05));
+      border: 1px solid rgba(0,68,204,0.2);
+    }
+    .prize-display .emoji-big { font-size: 48px; display: block; margin-bottom: 8px; }
+    .prize-display .prize-name { font-size: 20px; font-weight: 700; color: #F2F2F7; }
+    .prize-display .prize-desc { font-size: 13px; color: #8E8E93; margin-top: 4px; }
+
+    .lucky-number {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      background: linear-gradient(135deg, #F5C800, #FF9F0A);
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 24px;
+      color: #08080A;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(0,68,204,0.2); }
+      50% { box-shadow: 0 0 40px rgba(0,68,204,0.4), 0 0 60px rgba(245,200,0,0.1); }
+    }
+    .wheel-spinning canvas {
+      animation: pulse-glow 0.5s ease-in-out infinite;
+    }
+
+    @keyframes confetti-fall {
+      0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(400px) rotate(720deg); opacity: 0; }
+    }
+    .confetti-piece {
+      position: fixed;
+      width: 10px; height: 10px;
+      z-index: 99;
+      pointer-events: none;
+      animation: confetti-fall 3s ease-in forwards;
+    }
+
     /* Toast */
     .toast-bar {
       background: linear-gradient(90deg, rgba(48,209,88,0.15), transparent);
@@ -382,7 +522,7 @@
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           Seg–Sex 8h–18h
         </span>
-        <a href="/admin" class="tag bg-[#0044CC]/10 text-[#0044CC] border border-[#0044CC]/20 font-semibold hover:bg-[#0044CC]/20 transition-all no-underline" title="Painel Admin">
+        <a href="https://crm-garagem-production.up.railway.app/login" target="_blank" rel="noopener noreferrer" class="tag bg-[#0044CC]/10 text-[#0044CC] border border-[#0044CC]/20 font-semibold hover:bg-[#0044CC]/20 transition-all no-underline" title="Painel Admin CRM">
           🔒 Admin
         </a>
         <span class="tag bg-[#0044CC]/10 text-[#0044CC] border border-[#0044CC]/20 font-semibold" id="vagas-counter">
@@ -427,6 +567,7 @@
         <a href="#estoque" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Estoque</a>
         <a href="#numeros" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Números</a>
         <a href="#processo" class="text-sm font-medium text-[#8E8E93] hover:text-[#F2F2F7] transition-colors">Processo</a>
+        <a href="#meec-ofertas" class="text-sm font-medium text-[#F5C800] hover:text-[#FFD700] transition-colors">🎡 MEEC</a>
         <a href="#contato" class="btn-primary text-xs px-5 py-2.5">
           Agendar Diagnóstico
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -704,9 +845,9 @@
       <!-- Masonry-like gallery grid -->
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         <!-- Image 1 - Mecânico trabalhando -->
-        <div class="reveal group cursor-pointer" onclick="openLightbox('media/mecanico-trabalhando.jpeg')">
+        <div class="reveal group cursor-pointer" onclick="openLightbox('media/banner-fundo.jpeg')">
           <div class="media-placeholder aspect-[4/3] relative overflow-hidden">
-            <img src="media/mecanico-trabalhando.jpeg" alt="Mecânico trabalhando na Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" onload="this.classList.add('loaded')">
+            <img src="media/motor-limpo.png" alt="Mecânico trabalhando na Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" onload="this.classList.add('loaded')">
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08080A] to-transparent p-4">
               <div class="flex items-center gap-2">
                 <span class="tag bg-[#0044CC]/20 text-[#0044CC] border-0 text-[9px]">🔧 MECÂNICO</span>
@@ -717,9 +858,9 @@
         </div>
 
         <!-- Image 2 - Mecânico trabalhando -->
-        <div class="reveal reveal-delay-1 group cursor-pointer" onclick="openLightbox('media/mecanico-trabalhando.jpeg')">
+        <div class="reveal reveal-delay-1 group cursor-pointer" onclick="openLightbox('media/coifa-mocineica-anes.jpeg')">
           <div class="media-placeholder aspect-[4/3] relative overflow-hidden">
-            <img src="media/mecanico-trabalhando.jpeg" alt="Mecânico realizando diagnóstico" class="w-full h-full object-cover lazy-img loaded" loading="lazy" onload="this.classList.add('loaded')">
+            <img src="media/coifa-mocineica-anes.jpeg" alt="Mecânico realizando diagnóstico" class="w-full h-full object-cover lazy-img loaded" loading="lazy" onload="this.classList.add('loaded')">
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08080A] to-transparent p-4">
               <div class="flex items-center gap-2">
                 <span class="font-mono text-[10px] text-[#8E8E93]">🔧 Diagnóstico completo</span>
@@ -750,9 +891,9 @@
         </div>
 
         <!-- Image 4 - Estoque / Peças -->
-        <div class="reveal reveal-delay-1 group cursor-pointer" onclick="openLightbox('media/estoque.jpeg')">
+        <div class="reveal reveal-delay-1 group cursor-pointer" onclick="openLightbox('media/logo-oficial.png')">
           <div class="media-placeholder aspect-[4/3] relative overflow-hidden">
-            <img src="media/estoque.jpeg" alt="Estoque Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" onload="this.classList.add('loaded')">
+            <img src="media/depois.jpeg" alt="Estoque Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" onload="this.classList.add('loaded')">
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08080A] to-transparent p-4">
               <div class="font-mono text-[10px] text-[#8E8E93]">📦 Peças e estoque</div>
             </div>
@@ -760,9 +901,9 @@
         </div>
 
         <!-- Image 5 - Estoque / Peças -->
-        <div class="reveal reveal-delay-2 group cursor-pointer" onclick="openLightbox('media/estoque.jpeg')">
+        <div class="reveal reveal-delay-2 group cursor-pointer" onclick="openLightbox('media/depois.jpeg')">
           <div class="media-placeholder aspect-[4/3] relative overflow-hidden">
-            <img src="media/estoque.jpeg" alt="Estoque de peças Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" onload="this.classList.add('loaded')">
+            <img src="media/depois.jpeg" alt="Estoque de peças Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" onload="this.classList.add('loaded')">
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08080A] to-transparent p-4">
               <div class="font-mono text-[10px] text-[#8E8E93]">📦 Estoque de peças</div>
             </div>
@@ -770,9 +911,9 @@
         </div>
 
         <!-- Image 6 - Mecânico trabalhando -->
-        <div class="reveal reveal-delay-3 group cursor-pointer" onclick="openLightbox('media/mecanico-trabalhando.jpeg')">
+        <div class="reveal reveal-delay-3 group cursor-pointer" onclick="openLightbox('media/coifa-mocineica-anes.jpeg')">
           <div class="media-placeholder aspect-[4/3] relative overflow-hidden">
-            <img src="media/mecanico-trabalhando.jpeg" alt="Mecânico na Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" onload="this.classList.add('loaded')">
+            <img src="media/coifa-mocineica-anes.jpeg" alt="Mecânico na Garagem do MEEC" class="w-full h-full object-cover lazy-img loaded" loading="lazy" onload="this.classList.add('loaded')">
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08080A] to-transparent p-4">
               <div class="font-mono text-[10px] text-[#8E8E93]">🔧 Manutenção geral</div>
             </div>
@@ -1033,9 +1174,9 @@
         </div>
 
         <!-- Produto 4 -->
-        <div class="dash-card p-4 reveal reveal-delay-3 flex flex-col" data-id="4" data-nome="Troca de Óleo Completa" data-preco="180.00" data-img="media/troca-oleo.jpg">
+        <div class="dash-card p-4 reveal reveal-delay-3 flex flex-col" data-id="4" data-nome="Troca de Óleo Completa" data-preco="180.00" data-img="media/kit-reparos-volks.jpeg">
           <div class="media-placeholder aspect-[4/3] mb-4 overflow-hidden rounded-lg">
-            <img src="media/troca-oleo.jpg" alt="Troca de Óleo Completa" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=flex items-center justify-center h-full><span class=text-[#636366] font-mono text-xs>📦 Sem foto</span></div>'">
+            <img src="media/kit-reparos-volks.jpeg" alt="Troca de Óleo Completa" class="w-full h-full object-cover" loading="lazy" onerror="this.parentElement.innerHTML='<div class=flex items-center justify-center h-full><span class=text-[#636366] font-mono text-xs>📦 Sem foto</span></div>'">
           </div>
           <div class="flex-1 flex flex-col">
             <span class="tag bg-[#0A84FF]/10 text-[#0A84FF] border-0 text-[9px] mb-2 self-start">SERVIÇO</span>
@@ -1066,6 +1207,41 @@
           🛒 Ver Carrinho
           <span id="cart-count" class="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#FF9F0A] text-white text-[10px] font-bold flex items-center justify-center hidden">0</span>
         </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- MEEC OFERTAS — ROLETA DE PRÊMIOS                            -->
+  <!-- ============================================================ -->
+  <section id="meec-ofertas" class="border-t border-[#1C1C21] py-20 lg:py-28 grid-overlay">
+    <div class="max-w-[1280px] mx-auto px-6">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <div class="tag bg-[#F5C800]/10 text-[#F5C800] border border-[#F5C800]/20 mb-4 justify-center reveal">🎡 MEEC Ofertas</div>
+        <h2 class="section-title font-sans font-black text-[2.5rem] lg:text-[3.25rem] leading-tight tracking-[-0.02em] reveal">
+          GIRE A ROLETA<br class="hidden lg:block">
+          <span class="text-gradient-accent">E GANHE PRÊMIOS!</span>
+        </h2>
+        <p class="text-[#8E8E93] mt-4 max-w-xl mx-auto leading-relaxed reveal reveal-delay-1">
+          Produtos do estoque e serviços da <strong class="text-[#F2F2F7]">Garagem do MEEC</strong> como prêmios. 
+          Cadastre seu WhatsApp, gire a roleta e concorra a descontos e peças!</p>
+        <div class="flex items-center justify-center gap-4 mt-6 reveal reveal-delay-2">
+          <button onclick="openRoleta()" class="btn-primary text-lg px-10 py-5" style="box-shadow: 0 0 40px rgba(245,200,0,0.2);">
+            🎡 GIRAR ROLETA
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Prize Showcase -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4" id="meec-ofertas-grid">
+        <!-- Cards will be populated by JS -->
+      </div>
+
+      <div class="text-center mt-8 reveal">
+        <p class="text-xs text-[#636366] font-mono">
+          🎯 Todos os prêmios são válidos · Estoque sujeito à disponibilidade · Consulte regulamento
+        </p>
       </div>
     </div>
   </section>
@@ -1248,7 +1424,86 @@
       <a href="#estoque" class="text-2xl font-bold text-[#F2F2F7]">Estoque</a>
       <a href="#numeros" class="text-2xl font-bold text-[#F2F2F7]">Números</a>
       <a href="#processo" class="text-2xl font-bold text-[#F2F2F7]">Processo</a>
+      <a href="#meec-ofertas" class="text-2xl font-bold text-[#F5C800]">🎡 MEEC</a>
       <a href="#contato" class="btn-primary text-lg mt-4">Agendar Diagnóstico</a>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- ROLETA MODAL                                                 -->
+  <!-- ============================================================ -->
+  <div id="roleta-overlay" class="roleta-overlay">
+    <div class="roleta-modal" id="roleta-modal">
+      <button class="close-btn" onclick="closeRoleta()">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <!-- Step 1: Register -->
+      <div id="roleta-step-register" class="space-y-6">
+        <div class="text-center">
+          <div class="text-4xl mb-3">🎡</div>
+          <h3 class="font-sans font-bold text-xl mb-1">Cadastre-se para girar!</h3>
+          <p class="text-sm text-[#8E8E93]">Preencha seus dados abaixo e ganhe um <strong class="text-[#F5C800]">número da sorte</strong> antes de girar.</p>
+        </div>
+        <div class="roleta-register-form space-y-4">
+          <div>
+            <label class="block text-xs font-medium text-[#8E8E93] mb-1.5">Seu Nome</label>
+            <input type="text" id="roleta-name" placeholder="Ex: João Silva" required>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-[#8E8E93] mb-1.5">WhatsApp</label>
+            <input type="tel" id="roleta-whatsapp" placeholder="Ex: (61) 99999-9999" required>
+          </div>
+          <button onclick="roletaRegister()" id="roleta-register-btn" class="btn-primary w-full text-sm py-3">
+            🎡 Cadastrar e Girar!
+          </button>
+          <p class="text-[10px] text-[#636366] text-center">Ao cadastrar, você concorda em receber contato da Garagem do MEEC via WhatsApp.</p>
+        </div>
+      </div>
+
+      <!-- Step 2: Spin the wheel -->
+      <div id="roleta-step-spin" class="space-y-6" style="display:none;">
+        <div class="text-center">
+          <div class="inline-flex items-center gap-2 mb-3">
+            <span class="lucky-number" id="roleta-lucky-number">#000000</span>
+          </div>
+          <h3 class="font-sans font-bold text-xl mb-1">Seu número da sorte!</h3>
+          <p class="text-sm text-[#8E8E93] mb-2">Guarde esse número — você vai precisar para resgatar seu prêmio.</p>
+        </div>
+        <div class="wheel-container" id="wheel-container">
+          <div class="wheel-pointer"></div>
+          <canvas id="wheel-canvas" width="680" height="680"></canvas>
+          <div class="wheel-center">🎡</div>
+        </div>
+        <div class="text-center">
+          <button onclick="spinWheel()" id="spin-btn" class="btn-primary text-base px-8 py-4" style="box-shadow: 0 0 30px rgba(0,68,204,0.3);">
+            🎡 GIRAR!
+          </button>
+          <p class="text-xs text-[#636366] mt-2">Clique no botão para girar a roleta</p>
+        </div>
+      </div>
+
+      <!-- Step 3: Prize result -->
+      <div id="roleta-step-result" class="space-y-6" style="display:none;">
+        <div class="text-center">
+          <div class="inline-flex items-center gap-2 mb-4">
+            <span class="lucky-number" id="roleta-result-number">#000000</span>
+          </div>
+        </div>
+        <div class="prize-display" id="prize-display">
+          <span class="emoji-big" id="prize-emoji">🎉</span>
+          <div class="prize-name" id="prize-name">Prêmio!</div>
+          <div class="prize-desc" id="prize-desc">Descrição do prêmio</div>
+        </div>
+        <div class="flex flex-col gap-3">
+          <a href="https://wa.me/5561981257477?text=Olá! Acabei de ganhar na roleta da Garagem do MEEC! Meu número da sorte é: " id="roleta-whatsapp-link" target="_blank" class="btn-primary w-full text-sm py-3 bg-[#30D158] hover:bg-[#28B84E]">
+            💬 Resgatar Prêmio via WhatsApp
+          </a>
+          <button onclick="closeRoleta()" class="btn-secondary w-full text-sm py-3">
+            Continuar no Site
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1734,6 +1989,281 @@
 
     // Init cart UI
     updateCartUI();
+
+    // ============================================================
+    // ROLETA — WHEEL OF FORTUNE
+    // ============================================================
+    const ROLETA_PRIZES = [
+      { label: '🛢️ Troca de Óleo', desc: 'Troca de óleo sintético + filtro premium', valor: 180, tipo: 'servico', cor: '#0044CC' },
+      { label: '🔧 Diagnóstico Grátis', desc: 'Diagnóstico computadorizado ALPHATEST grátis', valor: 0, tipo: 'servico', cor: '#30D158' },
+      { label: '🔍 15% Off Revisão', desc: '15% de desconto em revisão completa', valor: 0, tipo: 'servico', cor: '#FF9F0A' },
+      { label: '🧴 Kit Limpeza Motor', desc: 'Kit completo para limpeza de motor', valor: 49, tipo: 'produto', cor: '#5AC8FA' },
+      { label: '⚡ 10% Off Peças', desc: '10% de desconto em qualquer peça do estoque', valor: 0, tipo: 'servico', cor: '#FF3B30' },
+      { label: '🚗 20% Off Serviço', desc: '20% de desconto em mão de obra', valor: 0, tipo: 'servico', cor: '#AF52DE' },
+      { label: '🔦 LED Automotivo', desc: 'Par de lâmpadas LED para farol', valor: 35, tipo: 'produto', cor: '#F5C800' },
+      { label: '💧 Aditivo 1L', desc: 'Aditivo para radiador 1 litro', valor: 25, tipo: 'produto', cor: '#FF6482' },
+    ];
+
+    const COLORS = ROLETA_PRIZES.map(function(p) { return p.cor; });
+    const NUM_SECTORS = ROLETA_PRIZES.length;
+    const ARC = (2 * Math.PI) / NUM_SECTORS;
+
+    let wheelCurrentAngle = 0;
+    let wheelSpinning = false;
+    let roletaRegistered = false;
+    let roletaLuckyNumber = null;
+    let roletaResultPrize = null;
+
+    function openRoleta() {
+      const overlay = document.getElementById('roleta-overlay');
+      if (!overlay) return;
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('roleta-step-register').style.display = '';
+      document.getElementById('roleta-step-spin').style.display = 'none';
+      document.getElementById('roleta-step-result').style.display = 'none';
+      roletaRegistered = false;
+    }
+
+    function closeRoleta() {
+      const overlay = document.getElementById('roleta-overlay');
+      if (overlay) overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const waInput = document.getElementById('roleta-whatsapp');
+      if (waInput) {
+        waInput.addEventListener('input', function(e) {
+          var value = e.target.value.replace(/\D/g, '');
+          if (value.length > 11) value = value.slice(0, 11);
+          if (value.length > 6) {
+            value = '(' + value.slice(0,2) + ') ' + value.slice(2,7) + '-' + value.slice(7);
+          } else if (value.length > 2) {
+            value = '(' + value.slice(0,2) + ') ' + value.slice(2);
+          } else if (value.length > 0) {
+            value = '(' + value;
+          }
+          e.target.value = value;
+        });
+      }
+    });
+
+    async function roletaRegister() {
+      const name = document.getElementById('roleta-name').value.trim();
+      const whatsapp = document.getElementById('roleta-whatsapp').value.trim();
+      const btn = document.getElementById('roleta-register-btn');
+
+      if (!name) { showToast('⚠️ Digite seu nome'); return; }
+      if (!whatsapp || whatsapp.replace(/\D/g,'').length < 10) { showToast('⚠️ Digite um WhatsApp válido'); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Cadastrando...';
+
+      roletaLuckyNumber = Math.floor(100000 + Math.random() * 900000);
+
+      try {
+        const response = await fetch('/api/public/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name,
+            whatsapp: whatsapp.replace(/\D/g,''),
+            origem: 'roleta',
+            servico_interesse: 'Roleta de Prêmios',
+            message: '🎡 Cadastro via Roleta | Nº da Sorte: #' + roletaLuckyNumber,
+            notas: 'Número da Sorte: ' + roletaLuckyNumber + ' | Cadastro: ' + new Date().toLocaleString('pt-BR')
+          })
+        });
+        if (!response.ok) console.warn('CRM lead registration failed');
+      } catch (err) { console.warn('CRM error:', err); }
+
+      roletaRegistered = true;
+      document.getElementById('roleta-lucky-number').textContent = '#' + roletaLuckyNumber;
+      document.getElementById('roleta-step-register').style.display = 'none';
+      document.getElementById('roleta-step-spin').style.display = '';
+      btn.disabled = false;
+      btn.innerHTML = '🎡 Cadastrar e Girar!';
+      drawWheel();
+      showToast('🎉 Seu número da sorte: #' + roletaLuckyNumber);
+    }
+
+    function drawWheel(rotationAngle) {
+      var canvas = document.getElementById('wheel-canvas');
+      if (!canvas) return;
+      var ctx = canvas.getContext('2d');
+      var w = canvas.width, h = canvas.height;
+      var cx = w / 2, cy = h / 2;
+      var radius = Math.min(cx, cy) - 10;
+      ctx.clearRect(0, 0, w, h);
+      var angle = rotationAngle || 0;
+
+      for (var i = 0; i < NUM_SECTORS; i++) {
+        var startAngle = angle + i * ARC;
+        var endAngle = startAngle + ARC;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = COLORS[i];
+        ctx.fill();
+        ctx.strokeStyle = '#08080A';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(startAngle + ARC / 2);
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 13px Inter, system-ui, sans-serif';
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        ctx.shadowBlur = 4;
+        ctx.fillText(ROLETA_PRIZES[i].label, radius - 16, 5);
+        ctx.restore();
+      }
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 26, 0, 2 * Math.PI);
+      ctx.fillStyle = '#08080A';
+      ctx.fill();
+      ctx.strokeStyle = '#2A2A31';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    function spinWheel() {
+      if (wheelSpinning) return;
+      if (!roletaRegistered) { showToast('⚠️ Cadastre-se primeiro!'); return; }
+
+      wheelSpinning = true;
+      var btn = document.getElementById('spin-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Girando...';
+      document.getElementById('wheel-container').classList.add('wheel-spinning');
+
+      var targetSector = Math.floor(Math.random() * NUM_SECTORS);
+      var targetAngle = wheelCurrentAngle + (5 + Math.random() * 5) * 2 * Math.PI + targetSector * ARC;
+      var startAngle = wheelCurrentAngle;
+      var totalRotation = targetAngle - startAngle;
+      var duration = 4000 + Math.random() * 1000;
+      var startTime = performance.now();
+
+      function animateSpin(time) {
+        var elapsed = time - startTime;
+        var progress = Math.min(elapsed / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        drawWheel(startAngle + totalRotation * eased);
+
+        if (progress < 1) {
+          requestAnimationFrame(animateSpin);
+        } else {
+          wheelCurrentAngle = startAngle + totalRotation * eased;
+          wheelSpinning = false;
+          document.getElementById('wheel-container').classList.remove('wheel-spinning');
+
+          var pointerAngle = (3 * Math.PI) / 2;
+          var winningIndex;
+          for (var i = 0; i < NUM_SECTORS; i++) {
+            var start = wheelCurrentAngle + i * ARC;
+            var end = start + ARC;
+            var np = pointerAngle;
+            if (np < start) np += 2 * Math.PI;
+            if (np >= start && np < end) { winningIndex = i; break; }
+          }
+          if (winningIndex === undefined) winningIndex = targetSector;
+
+          roletaResultPrize = ROLETA_PRIZES[winningIndex];
+          btn.disabled = false;
+          btn.innerHTML = '🎡 GIRAR!';
+          showResult(roletaResultPrize);
+        }
+      }
+      requestAnimationFrame(animateSpin);
+    }
+
+    function showResult(prize) {
+      document.getElementById('roleta-step-spin').style.display = 'none';
+      document.getElementById('roleta-step-result').style.display = '';
+      document.getElementById('roleta-result-number').textContent = '#' + roletaLuckyNumber;
+
+      var parts = prize.label.split(' ');
+      document.getElementById('prize-emoji').textContent = parts[0];
+      document.getElementById('prize-name').textContent = parts.slice(1).join(' ');
+      document.getElementById('prize-desc').textContent = prize.desc + (prize.valor > 0 ? ' (R$ ' + prize.valor.toFixed(2) + ')' : '');
+
+      var waInput = document.getElementById('roleta-whatsapp');
+      var waNumber = waInput ? waInput.value.replace(/\D/g,'') : '5561981257477';
+      var waLink = document.getElementById('roleta-whatsapp-link');
+      waLink.href = 'https://wa.me/' + waNumber + '?text=Olá! Acabei de ganhar na roleta da Garagem do MEEC! Meu prêmio: ' + encodeURIComponent(prize.label) + ' | Meu número da sorte: #' + roletaLuckyNumber;
+
+      launchConfetti();
+    }
+
+    function launchConfetti() {
+      var colors = ['#0044CC', '#F5C800', '#30D158', '#FF3B30', '#5AC8FA', '#AF52DE'];
+      for (var i = 0; i < 50; i++) {
+        var piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.top = '-10px';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+        piece.style.animationDelay = Math.random() * 0.5 + 's';
+        piece.style.width = (6 + Math.random() * 8) + 'px';
+        piece.style.height = (6 + Math.random() * 8) + 'px';
+        document.body.appendChild(piece);
+        setTimeout(function() { piece.remove(); }, 4000);
+      }
+    }
+
+    async function loadMeecOfertas() {
+      var grid = document.getElementById('meec-ofertas-grid');
+      if (!grid) return;
+      try {
+        var response = await fetch('/api/public/meec-stock');
+        if (!response.ok) throw new Error('Failed to fetch');
+        var products = await response.json();
+        var shuffled = products.sort(function() { return Math.random() - 0.5; });
+        var selected = shuffled.slice(0, 8);
+
+        grid.innerHTML = selected.map(function(p, i) {
+          return '<div class="dash-card p-4 reveal' + (i > 0 ? ' reveal-delay-' + Math.min(i, 3) : '') + ' flex flex-col">' +
+            '<div class="media-placeholder aspect-[4/3] mb-4 overflow-hidden rounded-lg">' +
+              '<div class="absolute inset-0 flex items-center justify-center">' +
+                '<span class="font-mono text-[10px] text-[#636366]">🎁 ' + (p.categoria || 'produto') + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="flex-1 flex flex-col">' +
+              '<span class="tag bg-[#F5C800]/10 text-[#F5C800] border-0 text-[9px] mb-2 self-start">🎡 PRÊMIO</span>' +
+              '<h4 class="font-sans font-bold text-sm mb-1">' + (p.nome || 'Produto') + '</h4>' +
+              '<p class="text-xs text-[#636366] mb-3 flex-1">Disponível no estoque da Garagem do MEEC</p>' +
+              '<div class="flex items-center justify-between mt-auto">' +
+                '<span class="font-mono font-bold text-lg text-[#F5C800]">R$ ' + (p.preco || 0).toFixed(2) + '</span>' +
+                '<span class="tag bg-[#30D158]/10 text-[#30D158] border-0 text-[9px]">Na roleta 🎡</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      } catch (err) {
+        console.warn('Failed to load stock for MEEC Ofertas:', err);
+        grid.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-[#636366] text-sm">⏳ Carregando ofertas...</p></div>';
+      }
+    }
+
+    // Auto-open roleta after 5s (once per session)
+    (function() {
+      if (!sessionStorage.getItem('roleta_shown')) {
+        setTimeout(function() {
+          openRoleta();
+          sessionStorage.setItem('roleta_shown', 'true');
+        }, 5000);
+      }
+    })();
+
+    // Load MEEC Ofertas on page load
+    setTimeout(loadMeecOfertas, 1000);
   </script>
 </body>
 </html>
