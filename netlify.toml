@@ -2,7 +2,7 @@
 # Site estático com backend API separado
 
 [build]
-  publish = "/"
+  publish = "public"
 
 [build.processing]
   skip_processing = true

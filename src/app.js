@@ -66,8 +66,8 @@ function createApp(db) {
     }
   }));
 
-  // Static files
-  app.use(express.static(path.join(__dirname, '..')));
+  // Static files - serve da pasta public/ para evitar expor backend no CDN
+  app.use(express.static(path.join(__dirname, '..', 'public')));
 
   // ─── Health Check (BEFORE tenant middleware — must respond instantly) ─
   app.get('/health', (req, res) => {

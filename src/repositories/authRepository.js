@@ -17,9 +17,10 @@ class AuthRepository {
    * @returns {Promise<Object|null>} User data or null if not found
    */
   async findByIdentifier(identifier) {
+    // Busca por username (email não existe na tabela SQLite local)
     return this.db.get(
-      'SELECT * FROM users WHERE username = ? OR email = ?',
-      [identifier, identifier]
+      'SELECT * FROM users WHERE username = ?',
+      [identifier]
     );
   }
 
