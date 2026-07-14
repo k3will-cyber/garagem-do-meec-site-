@@ -1788,6 +1788,13 @@
 
           if (response.ok) {
             successDiv.classList.remove('hidden');
+            // Abrir WhatsApp com resumo do lead (antes do reset para preservar dados)
+            var msgOrca = '📩 *NOVO LEAD - SITE GARAGEM DO MEEC*\n\n' +
+              '👤 *Nome:* ' + data.name + '\n' +
+              '📞 *WhatsApp:* ' + data.whatsapp + '\n' +
+              '💬 *Mensagem:* ' + (data.message || '(sem mensagem)') + '\n\n' +
+              '⚠️ *Lead do site — responder em até 2h*';
+            window.open('https://wa.me/5561981257477?text=' + encodeURIComponent(msgOrca), '_blank');
             form.reset();
             // Scroll to success message
             successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -2192,10 +2199,16 @@
       document.getElementById('prize-name').textContent = parts.slice(1).join(' ');
       document.getElementById('prize-desc').textContent = prize.desc + (prize.valor > 0 ? ' (R$ ' + prize.valor.toFixed(2) + ')' : '');
 
-      var waInput = document.getElementById('roleta-whatsapp');
-      var waNumber = waInput ? waInput.value.replace(/\D/g,'') : '5561981257477';
+      var waNome2 = document.getElementById('roleta-name').value.trim();
+      var waTel2  = document.getElementById('roleta-whatsapp').value.trim();
       var waLink = document.getElementById('roleta-whatsapp-link');
-      waLink.href = 'https://wa.me/' + waNumber + '?text=Olá! Acabei de ganhar na roleta da Garagem do MEEC! Meu prêmio: ' + encodeURIComponent(prize.label) + ' | Meu número da sorte: #' + roletaLuckyNumber;
+      var msgPremio = '🨡 *GANHEI NA ROLETA - GARAGEM DO MEEC!*\n\n' +
+        '👤 *Nome:* ' + waNome2 + '\n' +
+        '📞 *WhatsApp:* ' + waTel2 + '\n' +
+        '🏆 *Prêmio:* ' + prize.label + '\n' +
+        '🎫 *Nº da Sorte:* #' + roletaLuckyNumber + '\n\n' +
+        'Quero resgatar meu prêmio! 🚗💨';
+      waLink.href = 'https://wa.me/5561981257477?text=' + encodeURIComponent(msgPremio);
 
       launchConfetti();
     }
