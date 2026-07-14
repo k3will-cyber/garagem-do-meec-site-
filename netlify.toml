@@ -1,9 +1,9 @@
-# ─── Netlify Config — Garagem do MEEC ───────────────────────────
-# Static site deployment. The Express backend was replaced with
-# direct API calls to the CRM (crm-garagem on Railway).
+# ─── Netlify Config — Garagem do MEEC (React App) ──────────────
+# Build the Vite React app in the client/ directory
 
 [build]
-  publish = "."
+  publish = "client/dist"
+  command = "cd client && npm install && npm run build"
 
 [dev]
   framework = "#static"
@@ -12,8 +12,7 @@
   skip_processing = true
 
 [build.ignore]
-  # Ignore backend files not needed for static deployment
-  patterns = ["*.js", "src/*", "data/*", "node_modules/*"]
+  patterns = ["node_modules/*", "src/*", "data/*", "*.js", "server.js"]
 
 # ─── Redirects ──────────────────────────────────────────────────
 # SPA: all non-file routes serve index.html
@@ -41,3 +40,10 @@
   for = "*.mp4"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# ─── Media files from root (/media/*) ────────────────────────────
+[[redirects]]
+  from = "/media/*"
+  to = "/media/:splat"
+  status = 200
+  force = false

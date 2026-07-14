@@ -21,6 +21,13 @@ Thumbs.db
 *.swp
 *.swo
 
+# ─── React Build ────────────────────────────────────────────────
+client/dist/
+client/node_modules/
+
+# ─── Local symlinks (not needed in CI — workflow copia a mídia) ─
+client/public/media
+
 # ─── IDE ─────────────────────────────────────────────────────────
 .vscode/
 .idea/

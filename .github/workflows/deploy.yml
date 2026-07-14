@@ -1,0 +1,126 @@
+# ─── Garagem do MEEC — GitHub Actions Deploy ───────────────────
+# Build + Lint + Testes + Deploy automático para Netlify
+#
+# ⚠️ PRÉ-REQUISITOS:
+# 1. Commit o arquivo client/package-lock.json no Git (necessário pro npm ci)
+# 2. Adicione os seguintes Secrets no GitHub:
+#    Settings > Secrets and variables > Actions > New repository secret
+#
+#    Secret              | Onde encontrar no Netlify
+#    --------------------+----------------------------------------------
+#    NETLIFY_AUTH_TOKEN  | User Settings > Applications > Personal access tokens
+#    NETLIFY_SITE_ID     | Site settings > Site details > API ID
+#
+# 💡 ALTERNATIVA MAIS SIMPLES:
+# Se o site já está conectado ao Netlify via Git Integration,
+# NÃO precisa de GitHub Actions! O Netlify já faz deploy automático.
+# Basta configurar em app.netlify.com:
+#   Build command:  cd client && npm install && npm run build
+#   Publish dir:    client/dist
+# ================================================================
+
+name: Deploy para Netlify
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  lint:
+    name: 🔍 Lint e Qualidade
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: 📦 Instalar dependências
+        run: |
+          cd client
+          npm ci
+
+      - name: 🔍 Verificar lint
+        run: |
+          cd client
+          npm run lint
+
+  test:
+    name: 🧪 Testes Unitários
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: 📦 Instalar dependências
+        run: |
+          cd client
+          npm ci
+
+      - name: 🧪 Rodar testes
+        run: |
+          cd client
+          npm test
+
+  deploy:
+    name: 🚀 Build + Deploy
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: 📦 Instalar dependências
+        run: |
+          cd client
+          npm ci
+
+      - name: 📁 Copiar mídia para o build
+        run: |
+          mkdir -p client/public
+          cp -r media client/public/
+
+      - name: 🔨 Build do React
+        run: |
+          cd client
+          npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL || 'https://crm-garagem.onrender.com' }}
+
+      - name: 🚀 Deploy para Netlify
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: ./client/dist
+          production-deploy: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy: ${{ github.sha }}"
+          enable-pull-request-comment: true
+          enable-commit-comment: true
+          overwrite-pull-request-comment: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 5
