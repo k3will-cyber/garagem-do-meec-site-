@@ -3,16 +3,13 @@
 
 [build]
   publish = "client/dist"
-  command = "cd client && npm install && npm run build"
+  command = "cd client && mkdir -p public/media && npm install && npm run build"
 
 [dev]
   framework = "#static"
 
 [build.processing]
   skip_processing = true
-
-[build.ignore]
-  patterns = ["node_modules/*", "src/*", "data/*", "*.js", "server.js"]
 
 # ─── Redirects ──────────────────────────────────────────────────
 # SPA: all non-file routes serve index.html

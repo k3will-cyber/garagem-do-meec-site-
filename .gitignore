@@ -25,8 +25,7 @@ Thumbs.db
 client/dist/
 client/node_modules/
 
-# ─── Local symlinks (not needed in CI — workflow copia a mídia) ─
-client/public/media
+# ─── Local generated files ──────────────────────────────────────
 
 # ─── IDE ─────────────────────────────────────────────────────────
 .vscode/
