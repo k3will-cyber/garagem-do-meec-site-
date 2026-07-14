@@ -8,8 +8,8 @@ const metrics = [
 ];
 
 const extras = [
-  { value: '2', label: 'Mecânicos', icon: '👤' },
-  { value: '2', label: 'Elevadores', icon: '⬆️' },
+  { value: '3', label: 'Mecânicos', icon: '👤' },
+  { value: '4', label: 'Elevadores', icon: '⬆️' },
   { value: '12', label: 'Parceiros', icon: '🤝' },
   { value: '90d', label: 'Garantia', icon: '✅' },
 ];

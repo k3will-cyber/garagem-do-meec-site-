@@ -11,13 +11,13 @@ export default function QuemE() {
             </div>
             <h2 className="section-title font-sans font-black text-[2.5rem] lg:text-[3.25rem] leading-tight tracking-[-0.02em] mb-6">
               DE GARAGEM<br className="hidden lg:block" />
-              DE CASA A <span className="text-gradient-accent">2 ELEVADORES</span>
+              DE CASA A <span className="text-gradient-accent">4 ELEVADORES</span>
             </h2>
             <div className="space-y-4 text-[#8E8E93] leading-relaxed">
               <p>
                 <strong className="text-[#F2F2F7]">@meec_pablo</strong> — Pablo Jhonatan, 12 anos de estrada.
                 Comecei atendendo carro de vizinho na garagem de casa. Hoje a oficina tem{' '}
-                <strong className="text-[#F2F2F7]">2 elevadores hidráulicos, 2 mecânicos</strong> e o mesmo
+                <strong className="text-[#F2F2F7]">4 elevadores hidráulicos, 3 mecânicos</strong> e o mesmo
                 princípio: <strong className="text-[#0044CC]">mostrar o serviço acontecendo, não esconder.</strong>
               </p>
               <p>

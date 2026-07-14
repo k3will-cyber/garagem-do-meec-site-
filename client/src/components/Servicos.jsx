@@ -74,8 +74,8 @@ const services = [
 const ctaCard = {
   badge: '🔥 OFERTA',
   title: 'DIAGNÓSTICO',
-  subtitle: 'TÉCNICO',
-  desc: 'ALPHATEST + checklist visual. Zero compromisso.',
+  subtitle: 'GRÁTIS',
+  desc: 'Scanner OBD2 + checklist visual. Zero compromisso.',
 };
 
 export default function Servicos() {

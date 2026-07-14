@@ -66,23 +66,7 @@ export default function HomePage() {
         onOpenCart={handleOpenCart}
         cartCount={cart.count}
       />
-      <Hero
-        onOpenWheelReg={handleOpenWheelReg}
-        wheelProps={{
-          canvasRef: wheel.canvasRef,
-          isSpinning: wheel.isSpinning,
-          spinCount: wheel.spinCount,
-          showRegModal: wheel.showRegModal,
-          showResultModal: wheel.showResultModal,
-          currentPrize: wheel.currentPrize,
-          regData: wheel.regData,
-          setRegData: wheel.setRegData,
-          onSpin: wheel.spin,
-          onCloseReg: wheel.closeRegModal,
-          onCloseResult: wheel.closeResultModal,
-          onOpenReg: wheel.openRegModal,
-        }}
-      />
+      <Hero />
       <Servicos />
       <Galeria onOpenLightbox={openLightbox} />
       <BeforeAfter />
