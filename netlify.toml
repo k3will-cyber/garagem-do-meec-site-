@@ -1,12 +1,8 @@
-# ─── Netlify Config — Garagem do MEEC (React App) ──────────────
-# Build the Vite React app in the client/ directory
+# ─── Netlify Config — Garagem do MEEC (Site Estático) ─────────
+# Site estático com backend API separado
 
 [build]
-  publish = "client/dist"
-  command = "cd client && npm install && npm run build"
-
-[dev]
-  framework = "#static"
+  publish = "/"
 
 [build.processing]
   skip_processing = true
