@@ -307,7 +307,7 @@ function createApp(db) {
     }
     try {
       const { Client } = require('pg');
-      const client = new Client({ connectionString: dbUrl, ssl: { rejectUnauthorized: false } });
+      const client = new Client({ connectionString: dbUrl });
       await client.connect();
 
       // Verificar se crm_leads existe
