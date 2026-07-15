@@ -294,12 +294,13 @@ function createApp(db) {
     }
   });
 
-  // ─── Seed CRM Route ─────────────────────────────────────────────
-  // Popula a tabela crm_leads do CRM (crm-garagem) via API interna.
-  // Usa variável de ambiente CRM_DB_URL (formato: postgresql://user:pass@host:port/db)
+  // Seed CRM Route - populates crm_leads table in crm-garagem database.
+  // Call with header: X-Seed-Token: <CRM_SEED_TOKEN value>
   app.post('/api/admin/seed-crm', async (req, res) => {
-    if (process.env.NODE_ENV !== 'production') {
-      return res.status(403).json({ error: 'Disponível apenas em produção' });
+    const token = req.headers['x-seed-token'];
+    const validToken = process.env.CRM_SEED_TOKEN;
+    if (!validToken || token !== validToken) {
+      return res.status(403).json({ error: 'Token inválido ou CRM_SEED_TOKEN não configurado' });
     }
     const dbUrl = process.env.CRM_DB_URL;
     if (!dbUrl) {
